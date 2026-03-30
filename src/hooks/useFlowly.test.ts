@@ -4,24 +4,43 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { useFlowly } from './useFlowly';
 import { MockFlowlyRepository } from '../repository/MockFlowlyRepository';
 import { RepositoryContext } from '../repository/RepositoryContext';
+import { AuthContext } from '../auth/AuthContext';
+import type { AuthContextValue } from '../auth/AuthContext';
 import type { ReactNode } from 'react';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeWrapper(repo: MockFlowlyRepository) {
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return createElement(RepositoryContext.Provider, { value: repo }, children);
+const TEST_USER_ID = 'user-test-123';
+
+function makeAuthValue(userId: string = TEST_USER_ID): AuthContextValue {
+  return {
+    usuario: { id: userId, nome: 'Test User', email: 'test@example.com' },
+    sessao: {
+      usuario: { id: userId, nome: 'Test User', email: 'test@example.com' },
+      token: 'fake-token',
+      expiresAt: Date.now() + 3600_000,
+    },
+    carregando: false,
+    erro: null,
+    loginComEmail: async () => {},
+    registrarComEmail: async () => {},
+    loginComGoogle: async () => {},
+    loginComApple: async () => {},
+    logout: async () => {},
+    recuperarSenha: async () => {},
   };
 }
 
-// Empty repository — no seed data, clean state
-function makeEmptyRepo(): MockFlowlyRepository {
-  const repo = new MockFlowlyRepository();
-  // Clear seed transactions by replacing internal state via the public API
-  // We'll use a fresh instance and drain it via removerTransacao after listing
-  return repo;
+function makeWrapper(repo: MockFlowlyRepository, userId: string = TEST_USER_ID) {
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return createElement(
+      AuthContext.Provider,
+      { value: makeAuthValue(userId) },
+      createElement(RepositoryContext.Provider, { value: repo }, children)
+    );
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -31,13 +50,8 @@ function makeEmptyRepo(): MockFlowlyRepository {
 describe('useFlowly', () => {
   let repo: MockFlowlyRepository;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     repo = new MockFlowlyRepository();
-    // Remove all seed transactions so tests start from a known empty state
-    const seed = await repo.listarTransacoes();
-    for (const t of seed) {
-      await repo.removerTransacao(t.id);
-    }
   });
 
   // -------------------------------------------------------------------------

@@ -1,84 +1,33 @@
 import { Transaction, TransactionFilter, Wallet } from '../types/flowly';
 import { IFlowlyRepository } from './IFlowlyRepository';
 
-const SEED_TRANSACTIONS: Omit<Transaction, 'id'>[] = [
-  {
-    descricao: 'Salário',
-    valor: 5000,
-    tipo: 'entrada',
-    data: '2025-01-05',
-    fixo: true,
-    carteira_origem: 'Banco do Brasil',
-    recorrencia_id: 'rec-salario',
-    timestamp: Date.now(),
-  },
-  {
-    descricao: 'Aluguel',
-    valor: 1500,
-    tipo: 'saida',
-    data: '2025-01-10',
-    fixo: true,
-    carteira_origem: 'Banco do Brasil',
-    recorrencia_id: 'rec-aluguel',
-    timestamp: Date.now(),
-  },
-  {
-    descricao: 'Supermercado',
-    valor: 350,
-    tipo: 'saida',
-    data: '2025-01-15',
-    fixo: false,
-    carteira_origem: 'Banco do Brasil',
-    timestamp: Date.now(),
-  },
-  {
-    descricao: 'Freelance design',
-    valor: 800,
-    tipo: 'entrada',
-    data: '2025-01-20',
-    fixo: false,
-    carteira_origem: 'Dinheiro na Mão',
-    timestamp: Date.now(),
-  },
-  {
-    descricao: 'Farmácia',
-    valor: 120,
-    tipo: 'saida',
-    data: '2025-01-22',
-    fixo: false,
-    carteira_origem: 'Dinheiro na Mão',
-    timestamp: Date.now(),
-  },
-  {
-    descricao: 'Conta de luz',
-    valor: 180,
-    tipo: 'saida',
-    data: '2025-01-25',
-    fixo: true,
-    carteira_origem: 'Banco do Brasil',
-    recorrencia_id: 'rec-luz',
-    timestamp: Date.now(),
-  },
-];
+function assertUserId(userId: string | null | undefined): void {
+  if (!userId) {
+    throw new Error('Operação não autorizada: usuário não autenticado.');
+  }
+}
 
 export class MockFlowlyRepository implements IFlowlyRepository {
-  private transacoes: Transaction[];
-  private carteiras: Wallet[];
+  private transacoes: Map<string, Transaction[]> = new Map();
+  private carteiras: Map<string, Wallet[]> = new Map();
 
-  constructor() {
-    this.transacoes = SEED_TRANSACTIONS.map((t) => ({
-      ...t,
-      id: crypto.randomUUID(),
-    }));
-
-    this.carteiras = [
-      { nome: 'Banco do Brasil', saldo: 0 },
-      { nome: 'Dinheiro na Mão', saldo: 0 },
-    ];
+  private getTransacoes(userId: string): Transaction[] {
+    if (!this.transacoes.has(userId)) {
+      this.transacoes.set(userId, []);
+    }
+    return this.transacoes.get(userId)!;
   }
 
-  async listarTransacoes(filtros?: TransactionFilter): Promise<Transaction[]> {
-    let resultado = [...this.transacoes];
+  private getCarteiras(userId: string): Wallet[] {
+    if (!this.carteiras.has(userId)) {
+      this.carteiras.set(userId, []);
+    }
+    return this.carteiras.get(userId)!;
+  }
+
+  async listarTransacoes(userId: string, filtros?: TransactionFilter): Promise<Transaction[]> {
+    assertUserId(userId);
+    let resultado = [...this.getTransacoes(userId)];
 
     if (filtros?.carteira) {
       resultado = resultado.filter((t) => t.carteira_origem === filtros.carteira);
@@ -96,57 +45,67 @@ export class MockFlowlyRepository implements IFlowlyRepository {
     return resultado;
   }
 
-  async adicionarTransacao(transacao: Omit<Transaction, 'id'>): Promise<Transaction> {
+  async adicionarTransacao(userId: string, transacao: Omit<Transaction, 'id'>): Promise<Transaction> {
+    assertUserId(userId);
     const nova: Transaction = {
       ...transacao,
       id: crypto.randomUUID(),
       timestamp: Date.now(),
     };
-    this.transacoes.push(nova);
+    this.getTransacoes(userId).push(nova);
     return nova;
   }
 
-  async atualizarTransacao(id: string, dados: Partial<Transaction>): Promise<Transaction> {
-    const index = this.transacoes.findIndex((t) => t.id === id);
+  async atualizarTransacao(userId: string, id: string, dados: Partial<Transaction>): Promise<Transaction> {
+    assertUserId(userId);
+    const lista = this.getTransacoes(userId);
+    const index = lista.findIndex((t) => t.id === id);
     if (index === -1) {
       throw new Error(`Transação com id "${id}" não encontrada.`);
     }
-    this.transacoes[index] = { ...this.transacoes[index], ...dados, id };
-    return this.transacoes[index];
+    lista[index] = { ...lista[index], ...dados, id };
+    return lista[index];
   }
 
-  async removerTransacao(id: string): Promise<void> {
-    const index = this.transacoes.findIndex((t) => t.id === id);
+  async removerTransacao(userId: string, id: string): Promise<void> {
+    assertUserId(userId);
+    const lista = this.getTransacoes(userId);
+    const index = lista.findIndex((t) => t.id === id);
     if (index === -1) {
       throw new Error(`Transação com id "${id}" não encontrada.`);
     }
-    this.transacoes.splice(index, 1);
+    lista.splice(index, 1);
   }
 
-  async listarCarteiras(): Promise<Wallet[]> {
+  async listarCarteiras(userId: string): Promise<Wallet[]> {
+    assertUserId(userId);
+    const carteiras = this.getCarteiras(userId);
     const carteirasComSaldo = await Promise.all(
-      this.carteiras.map(async (c) => ({
+      carteiras.map(async (c) => ({
         nome: c.nome,
-        saldo: await this.obterSaldoPorCarteira(c.nome),
+        saldo: await this.obterSaldoPorCarteira(userId, c.nome),
       }))
     );
     return carteirasComSaldo;
   }
 
-  async adicionarCarteira(nome: string): Promise<Wallet> {
-    const existe = this.carteiras.some(
+  async adicionarCarteira(userId: string, nome: string): Promise<Wallet> {
+    assertUserId(userId);
+    const carteiras = this.getCarteiras(userId);
+    const existe = carteiras.some(
       (c) => c.nome.toLowerCase() === nome.toLowerCase()
     );
     if (existe) {
       throw new Error('Já existe uma carteira com esse nome.');
     }
     const nova: Wallet = { nome, saldo: 0 };
-    this.carteiras.push(nova);
+    carteiras.push(nova);
     return nova;
   }
 
-  async obterSaldoPorCarteira(nomeCarteira: string): Promise<number> {
-    const transacoesDaCarteira = this.transacoes.filter(
+  async obterSaldoPorCarteira(userId: string, nomeCarteira: string): Promise<number> {
+    assertUserId(userId);
+    const transacoesDaCarteira = this.getTransacoes(userId).filter(
       (t) => t.carteira_origem === nomeCarteira
     );
     const entradas = transacoesDaCarteira

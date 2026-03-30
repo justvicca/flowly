@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { TransactionInput } from './types/flowly';
+import { AuthRepositoryProvider } from './auth/AuthRepositoryContext';
+import { ProtectedRoute } from './auth/ProtectedRoute';
 import { RepositoryProvider } from './repository/RepositoryContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { TransactionList } from './components/transactions/TransactionList';
@@ -13,7 +15,7 @@ import { useFlowly } from './hooks/useFlowly';
 // Inner app — must be inside RepositoryProvider to use useFlowly
 // ---------------------------------------------------------------------------
 
-function FlowlyApp() {
+export function FlowlyAppContent() {
   const {
     transacoes,
     carteiras,
@@ -200,14 +202,18 @@ function FlowlyApp() {
 }
 
 // ---------------------------------------------------------------------------
-// Root — wraps with RepositoryProvider — Requisito 2.5
+// Root — wraps with AuthRepositoryProvider + ProtectedRoute — Requisitos 1.1, 5.2, 8.1, 8.3
 // ---------------------------------------------------------------------------
 
 function App() {
   return (
-    <RepositoryProvider>
-      <FlowlyApp />
-    </RepositoryProvider>
+    <AuthRepositoryProvider>
+      <RepositoryProvider>
+        <ProtectedRoute>
+          <FlowlyAppContent />
+        </ProtectedRoute>
+      </RepositoryProvider>
+    </AuthRepositoryProvider>
   );
 }
 

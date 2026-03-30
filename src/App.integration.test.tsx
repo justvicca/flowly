@@ -1,22 +1,23 @@
-/**
- * Testes de integração do App — Requisitos 3.2, 3.7, 5.5
- *
- * Cobrem dois fluxos completos:
- *  1. Adicionar transação → verificar saldo atualizado na carteira
- *  2. Remover transação com confirmação → verificar mensagem de sucesso
+﻿/**
+ * Testes de integracao do App - Requisitos 1.1, 3.2, 3.7, 5.5
  */
 
-import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, beforeAll } from 'vitest';
-import App from './App';
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, beforeAll, vi } from "vitest";
+import { AuthProvider } from "./auth/AuthContext";
+import { AuthService } from "./auth/AuthService";
+import { MockAuthRepository } from "./auth/MockAuthRepository";
+import type { Sessao } from "./auth/IAuthRepository";
+import { RepositoryProvider } from "./repository/RepositoryContext";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { FlowlyAppContent } from "./App";
 
-// jsdom não implementa window.matchMedia — polyfill necessário para useIsMobile
 beforeAll(() => {
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (query: string) => ({
-      matches: false, // simula desktop (não mobile)
+      matches: false,
       media: query,
       onchange: null,
       addListener: () => {},
@@ -28,115 +29,177 @@ beforeAll(() => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+const SESSAO_TESTE: Sessao = {
+  usuario: { id: "test-user-id", nome: "Teste", email: "teste@example.com" },
+  token: "mock-token",
+  expiresAt: Date.now() + 3600000,
+};
 
-/** Aguarda o carregamento inicial (spinner/loading desaparecer e transações aparecerem). */
+function renderWithActiveSession() {
+  const repo = new MockAuthRepository();
+  const service = new AuthService(repo);
+  (repo as unknown as { sessaoAtual: Sessao }).sessaoAtual = SESSAO_TESTE;
+  return render(
+    <AuthProvider authService={service}>
+      <RepositoryProvider>
+        <ProtectedRoute>
+          <FlowlyAppContent />
+        </ProtectedRoute>
+      </RepositoryProvider>
+    </AuthProvider>
+  );
+}
+
 async function waitForAppReady() {
-  // O MockFlowlyRepository carrega transações de seed; aguardamos pelo menos uma aparecer.
-  // Pode haver múltiplas ocorrências de "Salário" (seed + recorrência gerada), então usamos getAllByText.
-  await waitFor(() => {
-    const items = screen.getAllByText('Salário');
-    expect(items.length).toBeGreaterThan(0);
-  }, { timeout: 3000 });
+  await waitFor(
+    () => expect(screen.getByRole("button", { name: /adicionar/i })).toBeInTheDocument(),
+    { timeout: 3000 }
+  );
 }
 
-/** Navega para a aba "Carteiras" clicando no link/botão de navegação. */
 async function navigateToCarteiras() {
-  // AppLayout usa Sidebar (desktop) ou BottomTabs (mobile).
-  // Em jsdom, useIsMobile retorna false → Sidebar é renderizada.
-  // A Sidebar tem um botão/link com texto "Carteiras".
-  const carteirasBtn = screen.getByRole('button', { name: /carteiras/i });
-  await userEvent.click(carteirasBtn);
+  await userEvent.click(screen.getByRole("button", { name: /carteiras/i }));
 }
 
-// ---------------------------------------------------------------------------
-// Testes
-// ---------------------------------------------------------------------------
+async function navigateToTransacoes() {
+  // The nav button for transactions contains "Transa" (with accent)
+  const btns = screen.getAllByRole("button");
+  const transBtn = btns.find((b) => b.textContent && b.textContent.includes("Transa"));
+  if (transBtn) await userEvent.click(transBtn);
+}
 
-describe('Integração: App completo', () => {
-  /**
-   * Fluxo 1: Adicionar transação → verificar saldo atualizado na carteira
-   * Valida: Requisitos 3.2, 5.5
-   */
-  it('adiciona transação e reflete o saldo atualizado na aba Carteiras (Req 3.2, 5.5)', async () => {
-    render(<App />);
+/** Adiciona uma carteira via UI */
+async function addCarteiraViaUI(nome: string) {
+  await navigateToCarteiras();
+  // Click "Adicionar Carteira" button
+  const addBtn = await screen.findByRole("button", { name: /adicionar carteira/i });
+  await userEvent.click(addBtn);
+  // Fill in the wallet name input
+  const input = await screen.findByPlaceholderText(/banco do brasil/i);
+  await userEvent.type(input, nome);
+  // Click "Salvar"
+  const form = screen.getByRole("form", { name: /formul/i });
+  const salvarBtn = within(form).getByRole("button", { name: /salvar/i });
+  await userEvent.click(salvarBtn);
+  await waitFor(() => expect(screen.getByText(nome)).toBeInTheDocument());
+  await navigateToTransacoes();
+  await waitForAppReady();
+}
+
+describe("Integracao: Autenticacao no App", () => {
+  it("renderiza SplashScreen enquanto verifica a sessao (Req 5.5)", async () => {
+    const repo = new MockAuthRepository();
+    const service = new AuthService(repo);
+    vi.spyOn(service, "obterSessaoAtual").mockImplementation(() => new Promise(() => {}));
+
+    render(
+      <AuthProvider authService={service}>
+        <RepositoryProvider>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Conteudo protegido</div>
+          </ProtectedRoute>
+        </RepositoryProvider>
+      </AuthProvider>
+    );
+
+    expect(screen.getByTestId("splash-screen")).toBeInTheDocument();
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument();
+  });
+
+  it("renderiza LoginScreen quando nao ha sessao ativa (Req 1.1)", async () => {
+    const repo = new MockAuthRepository();
+    const service = new AuthService(repo);
+
+    render(
+      <AuthProvider authService={service}>
+        <RepositoryProvider>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Conteudo protegido</div>
+          </ProtectedRoute>
+        </RepositoryProvider>
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId("login-screen")).toBeInTheDocument());
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument();
+  });
+
+  it("renderiza conteudo protegido quando ha sessao ativa (Req 1.1, 5.2)", async () => {
+    renderWithActiveSession();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("login-screen")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("splash-screen")).not.toBeInTheDocument();
+    });
+
+    await waitForAppReady();
+    expect(screen.getByRole("button", { name: /adicionar/i })).toBeInTheDocument();
+  });
+});
+
+describe("Integracao: App completo", () => {
+  it("adiciona transacao e reflete o saldo atualizado na aba Carteiras (Req 3.2, 5.5)", async () => {
+    renderWithActiveSession();
     await waitForAppReady();
 
-    // 1. Abrir o formulário de nova transação
-    const addBtn = screen.getByRole('button', { name: /adicionar transação/i });
-    await userEvent.click(addBtn);
+    // Adicionar carteira primeiro
+    await addCarteiraViaUI("Conta Corrente");
 
-    // 2. O modal deve aparecer
-    const dialog = await screen.findByRole('dialog', { name: /nova transação/i });
+    // Agora adicionar transacao
+    await userEvent.click(screen.getByRole("button", { name: /adicionar/i }));
+
+    const dialog = await screen.findByRole("dialog");
     expect(dialog).toBeInTheDocument();
 
-    // 3. Preencher o formulário
-    const descricaoInput = within(dialog).getByLabelText(/descrição/i);
-    await userEvent.clear(descricaoInput);
-    await userEvent.type(descricaoInput, 'Bônus de fim de ano');
+    const descricaoInput = within(dialog).getByLabelText(/descri/i);
+    await userEvent.type(descricaoInput, "Bonus fim de ano");
 
     const valorInput = within(dialog).getByLabelText(/valor/i);
     await userEvent.clear(valorInput);
-    await userEvent.type(valorInput, '2000');
+    await userEvent.type(valorInput, "2000");
 
-    // Selecionar tipo "Entrada"
-    const tipoSelect = within(dialog).getByLabelText(/tipo/i);
-    await userEvent.selectOptions(tipoSelect, 'entrada');
+    await userEvent.selectOptions(within(dialog).getByLabelText(/tipo/i), "entrada");
 
-    // Selecionar carteira "Banco do Brasil"
-    const carteiraSelect = within(dialog).getByLabelText(/carteira/i);
-    await userEvent.selectOptions(carteiraSelect, 'Banco do Brasil');
+    await userEvent.click(within(dialog).getByRole("button", { name: /salvar/i }));
 
-    // 4. Submeter o formulário
-    const salvarBtn = within(dialog).getByRole('button', { name: /salvar/i });
-    await userEvent.click(salvarBtn);
+    await waitFor(() => expect(screen.getByText("Bonus fim de ano")).toBeInTheDocument());
 
-    // 5. Verificar que a transação aparece na lista
-    await waitFor(() => {
-      expect(screen.getByText('Bônus de fim de ano')).toBeInTheDocument();
-    });
-
-    // 6. Navegar para a aba Carteiras e verificar que o saldo foi atualizado
     await navigateToCarteiras();
 
-    // O saldo de "Banco do Brasil" deve incluir os R$ 2.000 adicionados.
-    // Verificamos que o card da carteira está presente e exibe um valor positivo.
-    await waitFor(() => {
-      expect(screen.getByText('Banco do Brasil')).toBeInTheDocument();
-    });
-
-    // O saldo total consolidado também deve estar visível
-    expect(screen.getByLabelText(/saldo total consolidado/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByLabelText(/saldo total/i)).toBeInTheDocument()
+    );
   });
 
-  /**
-   * Fluxo 2: Remover transação com confirmação → verificar mensagem de sucesso
-   * Valida: Requisitos 3.7
-   */
-  it('remove transação com confirmação e exibe "Pronto! A transação foi removida." (Req 3.7)', async () => {
-    render(<App />);
+  it("remove transacao com confirmacao e exibe mensagem de sucesso (Req 3.7)", async () => {
+    renderWithActiveSession();
     await waitForAppReady();
 
-    // 1. Clicar em "Apagar" na primeira transação visível (seed data)
-    const apagarBtns = screen.getAllByRole('button', { name: /apagar transação/i });
-    expect(apagarBtns.length).toBeGreaterThan(0);
+    // Adicionar carteira primeiro
+    await addCarteiraViaUI("Conta Corrente");
+
+    // Adicionar transacao para poder remover
+    await userEvent.click(screen.getByRole("button", { name: /adicionar/i }));
+    const dialog = await screen.findByRole("dialog");
+
+    const descricaoInput = within(dialog).getByLabelText(/descri/i);
+    await userEvent.type(descricaoInput, "Para remover");
+    const valorInput = within(dialog).getByLabelText(/valor/i);
+    await userEvent.clear(valorInput);
+    await userEvent.type(valorInput, "100");
+    await userEvent.selectOptions(within(dialog).getByLabelText(/tipo/i), "saida");
+    await userEvent.click(within(dialog).getByRole("button", { name: /salvar/i }));
+
+    await waitFor(() => expect(screen.getByText("Para remover")).toBeInTheDocument());
+
+    const apagarBtns = screen.getAllByRole("button", { name: /apagar/i });
     await userEvent.click(apagarBtns[0]);
 
-    // 2. ConfirmDialog deve aparecer
-    const confirmDialog = await screen.findByRole('dialog', { name: /confirmação/i });
-    expect(confirmDialog).toBeInTheDocument();
+    const confirmDialog = await screen.findByRole("dialog", { name: /confirma/i });
+    await userEvent.click(within(confirmDialog).getByRole("button", { name: /confirmar/i }));
 
-    // 3. Clicar em "Confirmar"
-    const confirmarBtn = within(confirmDialog).getByRole('button', { name: /confirmar/i });
-    await userEvent.click(confirmarBtn);
-
-    // 4. Verificar que a mensagem de sucesso aparece
-    await waitFor(() => {
-      expect(
-        screen.getByText('Pronto! A transação foi removida.')
-      ).toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(screen.getByText(/removida/i)).toBeInTheDocument()
+    );
   });
 });

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import { useAuth } from '../auth/AuthContext';
 import { gerarOcorrenciasDoMes } from '../engine/RecurrenceEngine';
 import { validarTransacao } from '../engine/TransactionValidator';
 import { useRepository } from '../repository/RepositoryContext';
@@ -43,6 +44,8 @@ function reducer(state: FlowlyState, action: Action): FlowlyState {
 
 export function useFlowly() {
   const repo = useRepository();
+  const { sessao } = useAuth();
+  const userId = sessao?.usuario.id ?? '';
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // -------------------------------------------------------------------------
@@ -50,15 +53,15 @@ export function useFlowly() {
   // -------------------------------------------------------------------------
 
   const recarregarTransacoes = useCallback(async () => {
-    const transacoes = await repo.listarTransacoes();
+    const transacoes = await repo.listarTransacoes(userId);
     dispatch({ type: 'SET_TRANSACOES', payload: transacoes });
     return transacoes;
-  }, [repo]);
+  }, [repo, userId]);
 
   const recarregarCarteiras = useCallback(async () => {
-    const carteiras = await repo.listarCarteiras();
+    const carteiras = await repo.listarCarteiras(userId);
     dispatch({ type: 'SET_CARTEIRAS', payload: carteiras });
-  }, [repo]);
+  }, [repo, userId]);
 
   // -------------------------------------------------------------------------
   // Inicialização
@@ -71,8 +74,8 @@ export function useFlowly() {
       dispatch({ type: 'SET_LOADING', payload: true });
       try {
         const [transacoes] = await Promise.all([
-          repo.listarTransacoes(),
-          repo.listarCarteiras(),
+          repo.listarTransacoes(userId),
+          repo.listarCarteiras(userId),
         ]);
 
         if (cancelled) return;
@@ -96,13 +99,13 @@ export function useFlowly() {
 
         for (const ocorrencia of novas) {
           const { id: _id, ...input } = ocorrencia;
-          await repo.adicionarTransacao(input);
+          await repo.adicionarTransacao(userId, input);
         }
 
         // Recarregar estado final
         const [transacoesAtualizadas, carteirasAtualizadas] = await Promise.all([
-          repo.listarTransacoes(),
-          repo.listarCarteiras(),
+          repo.listarTransacoes(userId),
+          repo.listarCarteiras(userId),
         ]);
 
         if (cancelled) return;
@@ -122,7 +125,7 @@ export function useFlowly() {
 
     init();
     return () => { cancelled = true; };
-  }, [repo]);
+  }, [repo, userId]);
 
   // -------------------------------------------------------------------------
   // Ações de transação
@@ -138,13 +141,13 @@ export function useFlowly() {
 
       dispatch({ type: 'SET_ERROR', payload: null });
       try {
-        await repo.adicionarTransacao(dados);
+        await repo.adicionarTransacao(userId, dados);
         await Promise.all([recarregarTransacoes(), recarregarCarteiras()]);
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: (err as Error).message });
       }
     },
-    [repo, recarregarTransacoes, recarregarCarteiras]
+    [repo, userId, recarregarTransacoes, recarregarCarteiras]
   );
 
   const copiarTransacao = useCallback(
@@ -180,25 +183,25 @@ export function useFlowly() {
   const moverTransacao = useCallback(
     async (id: string, novaCarteira: string): Promise<void> => {
       try {
-        await repo.atualizarTransacao(id, { carteira_origem: novaCarteira });
+        await repo.atualizarTransacao(userId, id, { carteira_origem: novaCarteira });
         await Promise.all([recarregarTransacoes(), recarregarCarteiras()]);
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: (err as Error).message });
       }
     },
-    [repo, recarregarTransacoes, recarregarCarteiras]
+    [repo, userId, recarregarTransacoes, recarregarCarteiras]
   );
 
   const removerTransacao = useCallback(
     async (id: string): Promise<void> => {
       try {
-        await repo.removerTransacao(id);
+        await repo.removerTransacao(userId, id);
         await Promise.all([recarregarTransacoes(), recarregarCarteiras()]);
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: (err as Error).message });
       }
     },
-    [repo, recarregarTransacoes, recarregarCarteiras]
+    [repo, userId, recarregarTransacoes, recarregarCarteiras]
   );
 
   // -------------------------------------------------------------------------
@@ -208,13 +211,13 @@ export function useFlowly() {
   const adicionarCarteira = useCallback(
     async (nome: string): Promise<void> => {
       try {
-        await repo.adicionarCarteira(nome);
+        await repo.adicionarCarteira(userId, nome);
         await recarregarCarteiras();
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: (err as Error).message });
       }
     },
-    [repo, recarregarCarteiras]
+    [repo, userId, recarregarCarteiras]
   );
 
   // -------------------------------------------------------------------------
