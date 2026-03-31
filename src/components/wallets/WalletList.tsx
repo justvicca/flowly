@@ -17,10 +17,10 @@ const btnBase: React.CSSProperties = {
   alignItems: 'center',
   gap: '6px',
   padding: '8px 16px',
-  border: '1px solid #1976d2',
+  border: '1px solid var(--primary, #1976d2)',
   borderRadius: '4px',
-  background: '#1976d2',
-  color: '#fff',
+  background: 'var(--primary, #1976d2)',
+  color: 'var(--primary-text, #fff)',
   fontSize: '14px',
   fontWeight: 600,
   cursor: 'pointer',
@@ -55,8 +55,8 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
       <div
         style={{
           padding: '14px 16px',
-          background: '#f5f5f5',
-          border: '1px solid #e0e0e0',
+          background: 'var(--surface2, #f5f5f5)',
+          border: '1px solid var(--border, #e0e0e0)',
           borderRadius: '6px',
           display: 'flex',
           justifyContent: 'space-between',
@@ -64,7 +64,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
         }}
         aria-label="Saldo total consolidado"
       >
-        <span style={{ fontWeight: 700, fontSize: '15px', color: '#424242' }}>Saldo Total</span>
+        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text, #424242)' }}>Saldo Total</span>
         <span
           style={{
             fontWeight: 700,
@@ -78,7 +78,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
 
       {/* Lista de carteiras — Requisito 5.1 */}
       {carteiras.length === 0 ? (
-        <p style={{ color: '#757575', textAlign: 'center', padding: '16px 0' }}>
+        <p style={{ color: 'var(--text2, #757575)', textAlign: 'center', padding: '16px 0' }}>
           Nenhuma carteira cadastrada.
         </p>
       ) : (
@@ -114,13 +114,13 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
             flexDirection: 'column',
             gap: '10px',
             padding: '14px 16px',
-            background: '#f5f5f5',
-            border: '1px solid #e0e0e0',
+            background: 'var(--surface2, #f5f5f5)',
+            border: '1px solid var(--border, #e0e0e0)',
             borderRadius: '6px',
           }}
           aria-label="Formulário para adicionar carteira"
         >
-          <label htmlFor="nova-carteira-nome" style={{ fontWeight: 600, fontSize: '14px', color: '#333' }}>
+          <label htmlFor="nova-carteira-nome" style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text, #333)' }}>
             Nome da carteira
           </label>
           <input
@@ -132,9 +132,11 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
             disabled={salvando}
             style={{
               padding: '8px 10px',
-              border: '1px solid #ccc',
+              border: '1px solid var(--border, #ccc)',
               borderRadius: '4px',
               fontSize: '14px',
+              background: 'var(--surface, #fff)',
+              color: 'var(--text, #333)',
             }}
             autoFocus
           />
@@ -161,9 +163,9 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
               onClick={() => { setMostrarForm(false); setNomeNovo(''); setErro(null); }}
               style={{
                 ...btnBase,
-                background: '#fff',
-                color: '#555',
-                borderColor: '#ccc',
+                background: 'var(--surface, #fff)',
+                color: 'var(--text2, #555)',
+                borderColor: 'var(--border, #ccc)',
               }}
             >
               Cancelar

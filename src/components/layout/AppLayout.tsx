@@ -1,31 +1,21 @@
 import type { ReactNode } from 'react';
 import { useIsMobile } from '../../hooks/useMediaQuery';
-import { Sidebar } from './Sidebar';
+import { Sidebar, type Tab } from './Sidebar';
 import { BottomTabs } from './BottomTabs';
-
-// Requisitos: 7.2, 7.3
 
 interface AppLayoutProps {
   children: ReactNode;
-  activeTab: 'transacoes' | 'carteiras';
-  onTabChange: (tab: 'transacoes' | 'carteiras') => void;
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
 }
 
 export function AppLayout({ children, activeTab, onTabChange }: AppLayoutProps) {
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    // Requisito 7.3 — mobile: conteúdo + abas inferiores
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <main
-          style={{
-            flex: 1,
-            padding: '16px',
-            paddingBottom: '72px', // space for BottomTabs
-            overflowY: 'auto',
-          }}
-        >
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg, #f5f7fa)' }}>
+        <main style={{ flex: 1, padding: '16px', paddingBottom: '72px', overflowY: 'auto' }}>
           {children}
         </main>
         <BottomTabs activeTab={activeTab} onTabChange={onTabChange} />
@@ -33,18 +23,10 @@ export function AppLayout({ children, activeTab, onTabChange }: AppLayoutProps) 
     );
   }
 
-  // Requisito 7.2 — desktop/tablet: sidebar fixa + área de conteúdo
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg, #f5f7fa)' }}>
       <Sidebar activeTab={activeTab} onTabChange={onTabChange} />
-      <main
-        style={{
-          marginLeft: '220px',
-          flex: 1,
-          padding: '32px',
-          overflowY: 'auto',
-        }}
-      >
+      <main style={{ marginLeft: '220px', flex: 1, padding: '32px', overflowY: 'auto' }}>
         {children}
       </main>
     </div>

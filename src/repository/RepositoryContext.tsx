@@ -1,13 +1,12 @@
 import { createContext, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { IFlowlyRepository } from './IFlowlyRepository';
-import { MockFlowlyRepository } from './MockFlowlyRepository';
+import { LocalStorageFlowlyRepository } from './LocalStorageFlowlyRepository';
 
 export const RepositoryContext = createContext<IFlowlyRepository | null>(null);
 
 export function RepositoryProvider({ children }: { children: ReactNode }) {
-  // Fase atual: Mock. Futuramente: LocalFlowlyRepository
-  const repo = useMemo(() => new MockFlowlyRepository(), []);
+  const repo = useMemo(() => new LocalStorageFlowlyRepository(), []);
   return (
     <RepositoryContext.Provider value={repo}>
       {children}

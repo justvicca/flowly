@@ -24,10 +24,10 @@ const btnBase: React.CSSProperties = {
   alignItems: 'center',
   gap: '5px',
   padding: '6px 12px',
-  border: '1px solid #ccc',
+  border: '1px solid var(--border, #ccc)',
   borderRadius: '4px',
-  background: '#fff',
-  color: '#333',
+  background: 'var(--surface, #fff)',
+  color: 'var(--text, #333)',
   fontSize: '13px',
   cursor: 'pointer',
   fontWeight: 500,
@@ -80,9 +80,9 @@ export function TransactionItem({
     flexDirection: 'column',
     gap: '8px',
     padding: '14px 16px',
-    border: fixo ? '2px solid #1565c0' : '1px solid #e0e0e0',
+    border: fixo ? '2px solid var(--primary, #1565c0)' : '1px solid var(--border, #e0e0e0)',
     borderRadius: '6px',
-    background: fixo ? '#e3f2fd' : '#fff',
+    background: fixo ? 'color-mix(in srgb, var(--primary, #1565c0) 10%, var(--surface, #fff))' : 'var(--surface, #fff)',
     boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
   };
 
@@ -120,8 +120,8 @@ export function TransactionItem({
       {/* Main info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '4px' }}>
         <div>
-          <div style={{ fontWeight: 600, fontSize: '15px', color: '#212121' }}>{descricao}</div>
-          <div style={{ fontSize: '13px', color: '#757575', marginTop: '2px' }}>
+          <div style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text, #212121)' }}>{descricao}</div>
+          <div style={{ fontSize: '13px', color: 'var(--text2, #757575)', marginTop: '2px' }}>
             {formatarData(data)} · {carteira_origem} · {isEntrada ? 'Entrada' : 'Saída'}
           </div>
         </div>
@@ -165,7 +165,7 @@ export function TransactionItem({
         <button
           type="button"
           onClick={() => { setMostrarMover((v) => !v); setMovendoPara(carteira_origem); }}
-          style={{ ...btnBase, background: mostrarMover ? '#e3f2fd' : '#fff', borderColor: mostrarMover ? '#1976d2' : '#ccc', color: mostrarMover ? '#1565c0' : '#333' }}
+          style={{ ...btnBase, background: mostrarMover ? 'color-mix(in srgb, var(--primary,#1565c0) 15%, var(--surface,#fff))' : 'var(--surface,#fff)', borderColor: mostrarMover ? 'var(--primary,#1976d2)' : 'var(--border,#ccc)', color: mostrarMover ? 'var(--primary,#1565c0)' : 'var(--text,#333)' }}
           aria-label="Mover transação para outra carteira"
           aria-expanded={mostrarMover}
         >
@@ -182,7 +182,7 @@ export function TransactionItem({
         <button
           type="button"
           onClick={() => onApagar(id)}
-          style={{ ...btnBase, color: '#c62828', borderColor: '#ef9a9a' }}
+          style={{ ...btnBase, color: '#e53935', borderColor: '#ef9a9a' }}
           aria-label="Apagar transação"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -204,22 +204,22 @@ export function TransactionItem({
             alignItems: 'center',
             gap: '8px',
             padding: '10px 12px',
-            background: '#f5f5f5',
-            border: '1px solid #e0e0e0',
+            background: 'var(--surface2, #f5f5f5)',
+            border: '1px solid var(--border, #e0e0e0)',
             borderRadius: '4px',
             flexWrap: 'wrap',
           }}
           role="group"
           aria-label="Selecionar carteira de destino"
         >
-          <label htmlFor={`mover-select-${id}`} style={{ fontSize: '13px', fontWeight: 600, color: '#333' }}>
+          <label htmlFor={`mover-select-${id}`} style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text, #333)' }}>
             Mover para:
           </label>
           <select
             id={`mover-select-${id}`}
             value={movendoPara}
             onChange={(e) => setMovendoPara(e.target.value)}
-            style={{ padding: '5px 8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
+            style={{ padding: '5px 8px', border: '1px solid var(--border,#ccc)', borderRadius: '4px', fontSize: '13px', background: 'var(--surface,#fff)', color: 'var(--text,#333)' }}
           >
             {carteiras.map((c) => (
               <option key={c} value={c}>{c}</option>

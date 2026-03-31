@@ -64,7 +64,13 @@ export function TransactionList({
   // 3. Aplicar busca por descrição
   const transacoesFiltradas = useMemo(() => {
     return [...transacoes]
-      .sort((a, b) => b.data.localeCompare(a.data))
+      .sort((a, b) => {
+        // Mais novo primeiro: usa timestamp se disponível, senão data + id como desempate
+        const tsA = a.timestamp ?? 0;
+        const tsB = b.timestamp ?? 0;
+        if (tsB !== tsA) return tsB - tsA;
+        return b.data.localeCompare(a.data);
+      })
       .filter((t) => {
         if (filtro === 'entrada') return t.tipo === 'entrada';
         if (filtro === 'saida') return t.tipo === 'saida';
@@ -107,10 +113,10 @@ export function TransactionList({
   const btnFiltro = (id: Filtro): React.CSSProperties => ({
     padding: '6px 14px',
     border: '1px solid',
-    borderColor: filtro === id ? '#1565c0' : '#ccc',
+    borderColor: filtro === id ? 'var(--primary, #1565c0)' : 'var(--border, #ccc)',
     borderRadius: '20px',
-    background: filtro === id ? '#1565c0' : '#fff',
-    color: filtro === id ? '#fff' : '#555',
+    background: filtro === id ? 'var(--primary, #1565c0)' : 'var(--surface, #fff)',
+    color: filtro === id ? 'var(--primary-text, #fff)' : 'var(--text2, #555)',
     fontSize: '13px',
     fontWeight: filtro === id ? 700 : 500,
     cursor: 'pointer',
@@ -120,11 +126,11 @@ export function TransactionList({
   const separadorStyle: React.CSSProperties = {
     fontSize: '13px',
     fontWeight: 700,
-    color: '#757575',
+    color: 'var(--text2, #757575)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
     padding: '8px 0 4px',
-    borderBottom: '1px solid #e0e0e0',
+    borderBottom: '1px solid var(--border, #e0e0e0)',
     marginBottom: '4px',
     marginTop: '12px',
   };
@@ -153,11 +159,13 @@ export function TransactionList({
           style={{
             width: '100%',
             padding: '9px 12px 9px 38px',
-            border: '1px solid #ccc',
+            border: '1px solid var(--border, #ccc)',
             borderRadius: '6px',
             fontSize: '14px',
             boxSizing: 'border-box',
             outline: 'none',
+            background: 'var(--surface, #fff)',
+            color: 'var(--text, #333)',
           }}
         />
       </div>

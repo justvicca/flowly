@@ -1,11 +1,13 @@
 // Requisito 7.2 — barra lateral fixa para telas largas (desktop/tablet)
 
+export type Tab = 'transacoes' | 'carteiras' | 'configuracoes';
+
 interface SidebarProps {
-  activeTab: 'transacoes' | 'carteiras';
-  onTabChange: (tab: 'transacoes' | 'carteiras') => void;
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
 }
 
-const navItems: { id: 'transacoes' | 'carteiras'; label: string; icon: React.ReactNode }[] = [
+const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
   {
     id: 'transacoes',
     label: 'Transações',
@@ -28,6 +30,16 @@ const navItems: { id: 'transacoes' | 'carteiras'; label: string; icon: React.Rea
       </svg>
     ),
   },
+  {
+    id: 'configuracoes',
+    label: 'Configurações',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  },
 ];
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
@@ -40,7 +52,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         left: 0,
         width: '220px',
         height: '100vh',
-        background: '#1565c0',
+        background: 'var(--nav-bg, #1565c0)',
         display: 'flex',
         flexDirection: 'column',
         paddingTop: '32px',
@@ -48,22 +60,18 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         zIndex: 100,
       }}
     >
-      {/* App title */}
-      <div
-        style={{
-          padding: '0 24px 28px',
-          color: '#fff',
-          fontSize: '22px',
-          fontWeight: 700,
-          letterSpacing: '0.02em',
-          borderBottom: '1px solid rgba(255,255,255,0.15)',
-          marginBottom: '12px',
-        }}
-      >
+      <div style={{
+        padding: '0 24px 28px',
+        color: 'var(--nav-text, #fff)',
+        fontSize: '22px',
+        fontWeight: 700,
+        letterSpacing: '0.02em',
+        borderBottom: '1px solid rgba(255,255,255,0.15)',
+        marginBottom: '12px',
+      }}>
         Flowly
       </div>
 
-      {/* Nav items — Requisito 7.1: ícone + texto */}
       {navItems.map(({ id, label, icon }) => {
         const isActive = activeTab === id;
         return (
@@ -79,8 +87,8 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               padding: '14px 24px',
               background: isActive ? 'rgba(255,255,255,0.18)' : 'transparent',
               border: 'none',
-              borderLeft: isActive ? '4px solid #fff' : '4px solid transparent',
-              color: isActive ? '#fff' : 'rgba(255,255,255,0.75)',
+              borderLeft: isActive ? '4px solid rgba(255,255,255,0.9)' : '4px solid transparent',
+              color: isActive ? 'var(--nav-text, #fff)' : 'rgba(255,255,255,0.7)',
               fontSize: '15px',
               fontWeight: isActive ? 700 : 500,
               cursor: 'pointer',
