@@ -42,7 +42,8 @@ export class FirebaseFlowlyRepository implements IFlowlyRepository {
   async atualizarTransacao(userId: string, id: string, dados: Partial<Transaction>): Promise<Transaction> {
     assertUserId(userId);
     const ref = doc(db, 'users', userId, 'transacoes', id);
-    await updateDoc(ref, { ...dados } as Record<string, unknown>);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await updateDoc(ref, dados as any);
     const snap = await getDocs(collection(db, 'users', userId, 'transacoes'));
     const d = snap.docs.find((x) => x.id === id);
     if (!d) throw new Error(`Transação "${id}" não encontrada.`);
