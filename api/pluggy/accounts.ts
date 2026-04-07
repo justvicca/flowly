@@ -1,19 +1,14 @@
-export const config = { runtime: 'edge' };
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: Request): Promise<Response> {
-  const url = new URL(req.url);
-  const itemId = url.searchParams.get('itemId');
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!itemId) {
-    return new Response(JSON.stringify({ error: 'itemId required' }), { status: 400 });
-  }
+  const { itemId } = req.query;
+  if (!itemId || typeof itemId !== 'string') return res.status(400).json({ error: 'itemId required' });
 
-  const clientId = process.env.PLUGGY_CLIENT_ID;
-  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
-
-  if (!clientId || !clientSecret) {
-    return new Response(JSON.stringify({ error: 'Pluggy credentials not configured' }), { status: 500 });
-  }
+  const clientId = process.env.PLUGGY_CLIENT_ID!;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET!;
 
   try {
     const authRes = await fetch('https://api.pluggy.ai/auth', {
@@ -21,18 +16,14 @@ export default async function handler(req: Request): Promise<Response> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientId, clientSecret }),
     });
-    const authData = await authRes.json() as { apiKey: string };
+    const { apiKey } = await authRes.json() as { apiKey: string };
 
-    const res = await fetch(`https://api.pluggy.ai/accounts?itemId=${itemId}`, {
-      headers: { 'X-API-KEY': authData.apiKey },
+    const r = await fetch(`https://api.pluggy.ai/accounts?itemId=${itemId}`, {
+      headers: { 'X-API-KEY': apiKey },
     });
-
-    const data = await res.json();
-    return new Response(JSON.stringify(data), {
-      status: res.status,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const data = await r.json();
+    return res.status(r.status).json(data);
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+    return res.status(500).json({ error: String(err) });
   }
 }

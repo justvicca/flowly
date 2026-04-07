@@ -1,19 +1,20 @@
-export const config = { runtime: 'edge' };
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
-  }
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const clientId = process.env.PLUGGY_CLIENT_ID;
   const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    return new Response(JSON.stringify({ error: 'Pluggy credentials not configured' }), { status: 500 });
+    return res.status(500).json({ error: 'Pluggy credentials not configured' });
   }
 
   try {
-    // 1. Obter API key
     const authRes = await fetch('https://api.pluggy.ai/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -22,32 +23,25 @@ export default async function handler(req: Request): Promise<Response> {
 
     if (!authRes.ok) {
       const err = await authRes.text();
-      return new Response(JSON.stringify({ error: `Auth failed: ${err}` }), { status: authRes.status });
+      return res.status(authRes.status).json({ error: `Auth failed: ${err}` });
     }
 
-    const authData = await authRes.json() as { apiKey: string };
+    const { apiKey } = await authRes.json() as { apiKey: string };
 
-    // 2. Criar connect token
     const tokenRes = await fetch('https://api.pluggy.ai/connect_token', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': authData.apiKey,
-      },
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
       body: JSON.stringify({}),
     });
 
     if (!tokenRes.ok) {
       const err = await tokenRes.text();
-      return new Response(JSON.stringify({ error: `Token failed: ${err}` }), { status: tokenRes.status });
+      return res.status(tokenRes.status).json({ error: `Token failed: ${err}` });
     }
 
-    const tokenData = await tokenRes.json() as { accessToken: string };
-    return new Response(JSON.stringify({ accessToken: tokenData.accessToken }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const { accessToken } = await tokenRes.json() as { accessToken: string };
+    return res.status(200).json({ accessToken });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+    return res.status(500).json({ error: String(err) });
   }
 }
