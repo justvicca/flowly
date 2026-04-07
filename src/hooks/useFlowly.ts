@@ -80,11 +80,13 @@ export function useFlowly() {
 
         if (cancelled) return;
 
-        // Gerar ocorrências do mês corrente para transações fixas
+        // Gerar ocorrências do mês corrente para transações fixas com recorrencia_id
         const hoje = new Date();
         const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-        const fixas = transacoes.filter((t) => t.fixo);
-        const ocorrencias = gerarOcorrenciasDoMes(fixas, mesAtual);
+        // Só gera ocorrências para transações que JÁ têm recorrencia_id (geradas pelo engine)
+        // Transações fixas normais (sem recorrencia_id) não devem ser duplicadas
+        const fixasComRecorrencia = transacoes.filter((t) => t.fixo && t.recorrencia_id);
+        const ocorrencias = gerarOcorrenciasDoMes(fixasComRecorrencia, mesAtual);
 
         // Adicionar apenas as ocorrências que ainda não existem no mês
         const idsRecorrenciaExistentes = new Set(

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Transaction } from '../../types/flowly';
+import { usePreferences } from '../../contexts/PreferencesContext';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -10,8 +11,8 @@ interface TransactionItemProps {
   onApagar: (id: string) => void;
 }
 
-function formatarValor(valor: number): string {
-  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function formatarValor(valor: number, codigoMoeda: string): string {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: codigoMoeda });
 }
 
 function formatarData(data: string): string {
@@ -47,7 +48,7 @@ export function TransactionItem({
   const [movendo, setMovendo] = useState(false);
 
   const { id, descricao, valor, tipo, data, fixo, carteira_origem } = transaction;
-
+  const { moeda } = usePreferences();
   const isEntrada = tipo === 'entrada';
   const valorCor = isEntrada ? '#2e7d32' : '#c62828';
 
@@ -126,7 +127,7 @@ export function TransactionItem({
           </div>
         </div>
         <div style={{ fontWeight: 700, fontSize: '17px', color: valorCor }}>
-          {isEntrada ? '+' : '-'}{formatarValor(valor)}
+          {isEntrada ? '+' : '-'}{formatarValor(valor, moeda.codigo)}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Wallet } from '../../types/flowly';
 import { WalletCard } from './WalletCard';
+import { usePreferences } from '../../contexts/PreferencesContext';
 
 interface WalletListProps {
   carteiras: Wallet[];
@@ -8,8 +9,8 @@ interface WalletListProps {
   onAdicionarCarteira: (nome: string) => Promise<void>;
 }
 
-function formatarSaldo(valor: number): string {
-  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function formatarSaldo(valor: number, codigoMoeda: string): string {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: codigoMoeda });
 }
 
 const btnBase: React.CSSProperties = {
@@ -31,6 +32,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
   const [nomeNovo, setNomeNovo] = useState('');
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const { moeda } = usePreferences();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +74,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
             color: saldoTotal >= 0 ? '#2e7d32' : '#c62828',
           }}
         >
-          {formatarSaldo(saldoTotal)}
+          {formatarSaldo(saldoTotal, moeda.codigo)}
         </span>
       </div>
 
