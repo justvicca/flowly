@@ -1,48 +1,44 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
-async function getApiKey(): Promise<string> {
-  const clientId = process.env.PLUGGY_CLIENT_ID!;
-  const clientSecret = process.env.PLUGGY_CLIENT_SECRET!;
+export default async function handler(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+  const accountId = url.searchParams.get('accountId');
+  const from = url.searchParams.get('from') ?? '';
+  const to = url.searchParams.get('to') ?? '';
 
-  const res = await fetch('https://api.pluggy.ai/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientId, clientSecret }),
-  });
-
-  const data = await res.json() as { apiKey: string };
-  return data.apiKey;
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (!accountId) {
+    return new Response(JSON.stringify({ error: 'accountId required' }), { status: 400 });
   }
 
-  const { accountId, from, to } = req.query;
-  if (!accountId || typeof accountId !== 'string') {
-    return res.status(400).json({ error: 'accountId required' });
+  const clientId = process.env.PLUGGY_CLIENT_ID;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    return new Response(JSON.stringify({ error: 'Pluggy credentials not configured' }), { status: 500 });
   }
 
   try {
-    const apiKey = await getApiKey();
+    const authRes = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret }),
+    });
+    const authData = await authRes.json() as { apiKey: string };
 
-    let url = `https://api.pluggy.ai/transactions?accountId=${accountId}&pageSize=100`;
-    if (from) url += `&from=${from}`;
-    if (to) url += `&to=${to}`;
+    let apiUrl = `https://api.pluggy.ai/transactions?accountId=${accountId}&pageSize=100`;
+    if (from) apiUrl += `&from=${from}`;
+    if (to) apiUrl += `&to=${to}`;
 
-    const response = await fetch(url, {
-      headers: { 'X-API-KEY': apiKey },
+    const res = await fetch(apiUrl, {
+      headers: { 'X-API-KEY': authData.apiKey },
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(response.status).json({ error: err });
-    }
-
-    const data = await response.json();
-    return res.status(200).json(data);
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
-    return res.status(500).json({ error: String(err) });
+    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
   }
 }

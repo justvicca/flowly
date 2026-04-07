@@ -1,44 +1,38 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
-async function getApiKey(): Promise<string> {
-  const clientId = process.env.PLUGGY_CLIENT_ID!;
-  const clientSecret = process.env.PLUGGY_CLIENT_SECRET!;
+export default async function handler(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+  const itemId = url.searchParams.get('itemId');
 
-  const res = await fetch('https://api.pluggy.ai/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientId, clientSecret }),
-  });
-
-  const data = await res.json() as { apiKey: string };
-  return data.apiKey;
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (!itemId) {
+    return new Response(JSON.stringify({ error: 'itemId required' }), { status: 400 });
   }
 
-  const { itemId } = req.query;
-  if (!itemId || typeof itemId !== 'string') {
-    return res.status(400).json({ error: 'itemId required' });
+  const clientId = process.env.PLUGGY_CLIENT_ID;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    return new Response(JSON.stringify({ error: 'Pluggy credentials not configured' }), { status: 500 });
   }
 
   try {
-    const apiKey = await getApiKey();
+    const authRes = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret }),
+    });
+    const authData = await authRes.json() as { apiKey: string };
 
-    const response = await fetch(`https://api.pluggy.ai/accounts?itemId=${itemId}`, {
-      headers: { 'X-API-KEY': apiKey },
+    const res = await fetch(`https://api.pluggy.ai/accounts?itemId=${itemId}`, {
+      headers: { 'X-API-KEY': authData.apiKey },
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(response.status).json({ error: err });
-    }
-
-    const data = await response.json();
-    return res.status(200).json(data);
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
-    return res.status(500).json({ error: String(err) });
+    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
   }
 }

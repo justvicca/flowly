@@ -1,45 +1,53 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
-async function getApiKey(): Promise<string> {
-  const clientId = process.env.PLUGGY_CLIENT_ID!;
-  const clientSecret = process.env.PLUGGY_CLIENT_SECRET!;
-
-  const res = await fetch('https://api.pluggy.ai/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientId, clientSecret }),
-  });
-
-  const data = await res.json() as { apiKey: string };
-  return data.apiKey;
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+  }
+
+  const clientId = process.env.PLUGGY_CLIENT_ID;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    return new Response(JSON.stringify({ error: 'Pluggy credentials not configured' }), { status: 500 });
   }
 
   try {
-    const apiKey = await getApiKey();
+    // 1. Obter API key
+    const authRes = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret }),
+    });
 
-    // Cria um connect token para o widget do Pluggy
-    const response = await fetch('https://api.pluggy.ai/connect_token', {
+    if (!authRes.ok) {
+      const err = await authRes.text();
+      return new Response(JSON.stringify({ error: `Auth failed: ${err}` }), { status: authRes.status });
+    }
+
+    const authData = await authRes.json() as { apiKey: string };
+
+    // 2. Criar connect token
+    const tokenRes = await fetch('https://api.pluggy.ai/connect_token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-KEY': apiKey,
+        'X-API-KEY': authData.apiKey,
       },
       body: JSON.stringify({}),
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(response.status).json({ error: err });
+    if (!tokenRes.ok) {
+      const err = await tokenRes.text();
+      return new Response(JSON.stringify({ error: `Token failed: ${err}` }), { status: tokenRes.status });
     }
 
-    const data = await response.json() as { accessToken: string };
-    return res.status(200).json({ accessToken: data.accessToken });
+    const tokenData = await tokenRes.json() as { accessToken: string };
+    return new Response(JSON.stringify({ accessToken: tokenData.accessToken }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
-    return res.status(500).json({ error: String(err) });
+    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
   }
 }
