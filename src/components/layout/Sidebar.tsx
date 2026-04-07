@@ -1,6 +1,6 @@
 // Requisito 7.2 — barra lateral fixa para telas largas (desktop/tablet)
 
-export type Tab = 'transacoes' | 'carteiras' | 'configuracoes';
+export type Tab = 'transacoes' | 'carteiras' | 'bancos' | 'configuracoes';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -27,6 +27,20 @@ const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
         <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
         <line x1="12" y1="12" x2="12" y2="16" />
         <line x1="10" y1="14" x2="14" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    id: 'bancos',
+    label: 'Bancos',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="3" y1="22" x2="21" y2="22" />
+        <line x1="6" y1="18" x2="6" y2="11" />
+        <line x1="10" y1="18" x2="10" y2="11" />
+        <line x1="14" y1="18" x2="14" y2="11" />
+        <line x1="18" y1="18" x2="18" y2="11" />
+        <polygon points="12 2 20 7 4 7" />
       </svg>
     ),
   },

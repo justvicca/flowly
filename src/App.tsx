@@ -12,11 +12,13 @@ import { WalletList } from './components/wallets/WalletList';
 import { Toast } from './components/shared/Toast';
 import { SyncIndicator } from './components/shared/SyncIndicator';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { BankConnectionScreen } from './screens/BankConnectionScreen';
 import { useFlowly } from './hooks/useFlowly';
 
 // Mapeia hash da URL para tab
 function hashToTab(hash: string): Tab {
   if (hash === '#carteiras') return 'carteiras';
+  if (hash === '#bancos') return 'bancos';
   if (hash === '#configuracoes') return 'configuracoes';
   return 'transacoes';
 }
@@ -128,6 +130,7 @@ export function FlowlyAppContent() {
       )}
 
       {activeTab === 'configuracoes' && <SettingsScreen />}
+      {activeTab === 'bancos' && <BankConnectionScreen />}
 
       {formAberto && (
         <div role="presentation" style={modalOverlay} onClick={handleFecharForm}>
