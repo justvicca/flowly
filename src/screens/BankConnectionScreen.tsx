@@ -33,8 +33,22 @@ interface PluggyTransaction {
 
 async function getConnectToken(): Promise<string> {
   const res = await fetch('/api/pluggy/connect-token', { method: 'POST' });
-  const data = await res.json() as { accessToken: string };
-  return data.accessToken;
+  const text = await res.text();
+  if (!res.ok) throw new Error(`Erro ${res.status}: ${text}`);
+  
+  let data: Record<string, unknown>;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Resposta inválida da API: ${text}`);
+  }
+  
+  if (data.error) throw new Error(String(data.error));
+  
+  // Pluggy pode retornar accessToken ou connectToken
+  const token = (data.accessToken ?? data.connectToken) as string | undefined;
+  if (!token) throw new Error(`Token não encontrado. Campos retornados: ${Object.keys(data).join(', ')}`);
+  return token;
 }
 
 async function getAccounts(itemId: string): Promise<PluggyAccount[]> {
