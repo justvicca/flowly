@@ -1,6 +1,7 @@
 // Requisito 7.3 — abas de navegação inferiores com largura total para mobile
 
 import type { Tab } from './Sidebar';
+import { useTranslation } from '../../contexts/PreferencesContext';
 
 interface BottomTabsProps {
   activeTab: Tab;
@@ -57,6 +58,13 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function BottomTabs({ activeTab, onTabChange }: BottomTabsProps) {
+  const tr = useTranslation();
+  const labels: Record<Tab, string> = {
+    transacoes: tr('transacoes'),
+    carteiras: tr('carteiras'),
+    bancos: tr('bancos'),
+    configuracoes: tr('configuracoes').slice(0, 6) + '.',
+  };
   return (
     <nav
       aria-label="Navegação principal"
@@ -73,8 +81,9 @@ export function BottomTabs({ activeTab, onTabChange }: BottomTabsProps) {
         zIndex: 100,
       }}
     >
-      {tabs.map(({ id, label, icon }) => {
+      {tabs.map(({ id, icon }) => {
         const isActive = activeTab === id;
+        const label = labels[id];
         return (
           <button
             key={id}

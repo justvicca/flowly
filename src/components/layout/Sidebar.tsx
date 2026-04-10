@@ -1,4 +1,5 @@
 // Requisito 7.2 — barra lateral fixa para telas largas (desktop/tablet)
+import { useTranslation } from '../../contexts/PreferencesContext';
 
 export type Tab = 'transacoes' | 'carteiras' | 'bancos' | 'configuracoes';
 
@@ -57,6 +58,13 @@ const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const tr = useTranslation();
+  const labels: Record<Tab, string> = {
+    transacoes: tr('transacoes'),
+    carteiras: tr('carteiras'),
+    bancos: tr('bancos'),
+    configuracoes: tr('configuracoes'),
+  };
   return (
     <nav
       aria-label="Navegação principal"
@@ -86,8 +94,9 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         Flowly
       </div>
 
-      {navItems.map(({ id, label, icon }) => {
+      {navItems.map(({ id, icon }) => {
         const isActive = activeTab === id;
+        const label = labels[id];
         return (
           <button
             key={id}

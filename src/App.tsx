@@ -14,6 +14,7 @@ import { SyncIndicator } from './components/shared/SyncIndicator';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { BankConnectionScreen } from './screens/BankConnectionScreen';
 import { useFlowly } from './hooks/useFlowly';
+import { useTranslation } from './contexts/PreferencesContext';
 
 // Mapeia hash da URL para tab
 function hashToTab(hash: string): Tab {
@@ -49,6 +50,7 @@ function useTabNav(): [Tab, (t: Tab) => void] {
 }
 
 export function FlowlyAppContent() {
+  const tr = useTranslation();
   const {
     transacoes, carteiras, carregando: sincronizando, erro,
     adicionarTransacao, copiarTransacao, duplicarTransacao,
@@ -111,11 +113,11 @@ export function FlowlyAppContent() {
 
       {activeTab === 'transacoes' && (
         <div>
-          <button type="button" onClick={handleAbrirForm} style={addBtnStyle} aria-label="Adicionar transação">
+          <button type="button" onClick={handleAbrirForm} style={addBtnStyle} aria-label={tr('adicionarTransacao')}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            Adicionar Transação
+            {tr('adicionarTransacao')}
           </button>
           <TransactionList
             transacoes={transacoes} carteiras={nomeCarteiras}

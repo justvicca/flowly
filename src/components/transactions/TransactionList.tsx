@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import type { Transaction } from '../../types/flowly';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { TransactionItem } from './TransactionItem';
+import { useTranslation } from '../../contexts/PreferencesContext';
 
 interface TransactionListProps {
   transacoes: Transaction[];
@@ -13,14 +14,6 @@ interface TransactionListProps {
 }
 
 type Filtro = 'todos' | 'entrada' | 'saida' | 'fixo' | 'nao-fixo';
-
-const FILTROS: { id: Filtro; label: string }[] = [
-  { id: 'todos', label: 'Todos' },
-  { id: 'entrada', label: 'Ganhos' },
-  { id: 'saida', label: 'Gastos' },
-  { id: 'fixo', label: 'Fixos' },
-  { id: 'nao-fixo', label: 'Não fixos' },
-];
 
 function nomeMes(mesStr: string): string {
   const [ano, mes] = mesStr.split('-');
@@ -45,6 +38,14 @@ export function TransactionList({
   onMover,
   onRemover,
 }: TransactionListProps) {
+  const tr = useTranslation();
+  const FILTROS: { id: Filtro; label: string }[] = [
+    { id: 'todos', label: tr('todos') },
+    { id: 'entrada', label: tr('ganhos') },
+    { id: 'saida', label: tr('gastos') },
+    { id: 'fixo', label: tr('fixos') },
+    { id: 'nao-fixo', label: tr('naoFixos') },
+  ];
   const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
   const [mensagemSucesso, setMensagemSucesso] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>('todos');
@@ -152,7 +153,7 @@ export function TransactionList({
         </svg>
         <input
           type="search"
-          placeholder="Pesquisar transações..."
+          placeholder={tr('pesquisar')}
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           aria-label="Pesquisar transações"

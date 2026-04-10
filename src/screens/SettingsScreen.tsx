@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { usePreferences, MOEDAS, type Tema } from '../contexts/PreferencesContext';
+import { usePreferences, MOEDAS, IDIOMAS, type Tema, type Idioma } from '../contexts/PreferencesContext';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -134,10 +134,10 @@ function PrimaryBtn({ children, onClick, disabled, danger }: {
 
 export function SettingsScreen() {
   const { usuario, logout } = useAuth();
-  const { tema, moeda, setTema, setMoeda } = usePreferences();
+  const { tema, moeda, idioma, setTema, setMoeda, setIdioma } = usePreferences();
 
   const [modal, setModal] = useState<
-    'nome' | 'senha' | 'moeda' | 'tema' | 'excluir' | null
+    'nome' | 'senha' | 'moeda' | 'tema' | 'idioma' | 'excluir' | null
   >(null);
 
   // Form states
@@ -281,6 +281,13 @@ export function SettingsScreen() {
           onClick={() => setModal('moeda')}
           border={false}
         />
+        <Row
+          label="Idioma"
+          sublabel={IDIOMAS.find(i => i.codigo === idioma)?.nomeNativo}
+          right={<ChevronRight />}
+          onClick={() => setModal('idioma')}
+          border={false}
+        />
       </Section>
 
       {/* Sessão */}
@@ -374,6 +381,37 @@ export function SettingsScreen() {
                   {m.simbolo} <span style={{ fontWeight: 400, color: 'var(--text2)' }}>{m.nome}</span>
                 </span>
                 {moeda.codigo === m.codigo && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+
+      {modal === 'idioma' && (
+        <Modal title="Escolher idioma" onClose={fechar}>
+          <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+            {IDIOMAS.map((i) => (
+              <button
+                key={i.codigo}
+                type="button"
+                onClick={() => { setIdioma(i.codigo as Idioma); fechar(); }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  width: '100%', padding: '12px 16px', marginBottom: '6px',
+                  background: idioma === i.codigo ? 'var(--surface2)' : 'transparent',
+                  border: `2px solid ${idioma === i.codigo ? 'var(--primary)' : 'var(--border)'}`,
+                  borderRadius: '10px', cursor: 'pointer', textAlign: 'left',
+                }}
+              >
+                <span style={{ color: 'var(--text)', fontSize: '15px' }}>
+                  <span style={{ fontWeight: 600 }}>{i.nomeNativo}</span>
+                  <span style={{ color: 'var(--text2)', marginLeft: '8px', fontSize: '13px' }}>{i.nome}</span>
+                </span>
+                {idioma === i.codigo && (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
