@@ -79,7 +79,7 @@ export function FlowlyAppContent() {
 
   async function handleSubmitTransacao(dados: TransactionInput) {
     await adicionarTransacao(dados);
-    if (!erro) { setToastSucesso('Pronto! A transação foi salva.'); handleFecharForm(); }
+    if (!erro) { setToastSucesso(tr('transacaoSalva')); handleFecharForm(); }
   }
 
   const nomeCarteiras = carteiras.map((c) => c.nome);
@@ -136,9 +136,9 @@ export function FlowlyAppContent() {
 
       {formAberto && (
         <div role="presentation" style={modalOverlay} onClick={handleFecharForm}>
-          <div role="dialog" aria-modal="true" aria-label={dadosCopia ? 'Copiar transação' : 'Nova transação'} style={modalPanel} onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-modal="true" aria-label={dadosCopia ? tr('copiarTransacao') : tr('novaTransacao')} style={modalPanel} onClick={(e) => e.stopPropagation()}>
             <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 600, color: 'var(--text, #212121)' }}>
-              {dadosCopia ? 'Copiar Transação' : 'Nova Transação'}
+              {dadosCopia ? tr('copiarTransacao') : tr('novaTransacao')}
             </h2>
             <TransactionForm carteiras={nomeCarteiras} initialData={dadosCopia} onSubmit={handleSubmitTransacao} onCancel={handleFecharForm} erro={erro} />
           </div>

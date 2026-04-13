@@ -49,7 +49,10 @@ export type TranslationKey =
   | 'entrar' | 'criarConta' | 'esqueciSenha' | 'bemVindo' | 'ouContinueCom'
   | 'naoTemConta' | 'jaTemConta' | 'email' | 'senha' | 'nomeCompleto'
   | 'conectarBancoDesc' | 'importacaoConcluida' | 'algoDeuErrado' | 'tentarNovamente'
-  | 'conectarOutroBanco' | 'entrada' | 'saida' | 'copiar' | 'duplicar' | 'mover' | 'apagar';
+  | 'conectarOutroBanco' | 'entrada' | 'saida' | 'copiar' | 'duplicar' | 'mover' | 'apagar'
+  | 'nome' | 'escolherTema' | 'escolherMoeda' | 'escolherIdioma' | 'salvar'
+  | 'excluirMinhaConta' | 'excluirContaDesc' | 'excluirContaConfirmacao'
+  | 'novaTransacao' | 'copiarTransacao' | 'transacaoSalva';
 
 type Translations = Record<TranslationKey, string>;
 
@@ -70,6 +73,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: 'Importação concluída!', algoDeuErrado: 'Algo deu errado',
     tentarNovamente: 'Tentar novamente', conectarOutroBanco: 'Conectar outro banco',
     entrada: 'Entrada', saida: 'Saída', copiar: 'Copiar', duplicar: 'Duplicar', mover: 'Mover', apagar: 'Apagar',
+    nome: 'Nome', escolherTema: 'Escolher tema', escolherMoeda: 'Escolher moeda', escolherIdioma: 'Escolher idioma',
+    salvar: 'Salvar', excluirMinhaConta: 'Excluir minha conta',
+    excluirContaDesc: 'Remove todos os seus dados permanentemente',
+    excluirContaConfirmacao: 'Esta ação é irreversível. Todos os seus dados serão apagados permanentemente. Digite sua senha para confirmar.',
+    novaTransacao: 'Nova Transação', copiarTransacao: 'Copiar Transação', transacaoSalva: 'Pronto! A transação foi salva.',
   },
   en: {
     transacoes: 'Transactions', carteiras: 'Wallets', bancos: 'Banks', configuracoes: 'Settings',
@@ -87,6 +95,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: 'Import complete!', algoDeuErrado: 'Something went wrong',
     tentarNovamente: 'Try again', conectarOutroBanco: 'Connect another bank',
     entrada: 'Income', saida: 'Expense', copiar: 'Copy', duplicar: 'Duplicate', mover: 'Move', apagar: 'Delete',
+    nome: 'Name', escolherTema: 'Choose theme', escolherMoeda: 'Choose currency', escolherIdioma: 'Choose language',
+    salvar: 'Save', excluirMinhaConta: 'Delete my account',
+    excluirContaDesc: 'Permanently removes all your data',
+    excluirContaConfirmacao: 'This action is irreversible. All your data will be permanently deleted. Enter your password to confirm.',
+    novaTransacao: 'New Transaction', copiarTransacao: 'Copy Transaction', transacaoSalva: 'Done! Transaction saved.',
   },
   de: {
     transacoes: 'Transaktionen', carteiras: 'Konten', bancos: 'Banken', configuracoes: 'Einstellungen',
@@ -104,6 +117,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: 'Import abgeschlossen!', algoDeuErrado: 'Etwas ist schiefgelaufen',
     tentarNovamente: 'Erneut versuchen', conectarOutroBanco: 'Weitere Bank verbinden',
     entrada: 'Einnahme', saida: 'Ausgabe', copiar: 'Kopieren', duplicar: 'Duplizieren', mover: 'Verschieben', apagar: 'Löschen',
+    nome: 'Name', escolherTema: 'Design wählen', escolherMoeda: 'Währung wählen', escolherIdioma: 'Sprache wählen',
+    salvar: 'Speichern', excluirMinhaConta: 'Mein Konto löschen',
+    excluirContaDesc: 'Löscht alle Ihre Daten dauerhaft',
+    excluirContaConfirmacao: 'Diese Aktion ist unwiderruflich. Alle Ihre Daten werden dauerhaft gelöscht. Geben Sie Ihr Passwort zur Bestätigung ein.',
+    novaTransacao: 'Neue Transaktion', copiarTransacao: 'Transaktion kopieren', transacaoSalva: 'Fertig! Transaktion gespeichert.',
   },
   es: {
     transacoes: 'Transacciones', carteiras: 'Carteras', bancos: 'Bancos', configuracoes: 'Configuración',
@@ -121,6 +139,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: '¡Importación completada!', algoDeuErrado: 'Algo salió mal',
     tentarNovamente: 'Intentar de nuevo', conectarOutroBanco: 'Conectar otro banco',
     entrada: 'Ingreso', saida: 'Gasto', copiar: 'Copiar', duplicar: 'Duplicar', mover: 'Mover', apagar: 'Eliminar',
+    nome: 'Nombre', escolherTema: 'Elegir tema', escolherMoeda: 'Elegir moneda', escolherIdioma: 'Elegir idioma',
+    salvar: 'Guardar', excluirMinhaConta: 'Eliminar mi cuenta',
+    excluirContaDesc: 'Elimina todos tus datos permanentemente',
+    excluirContaConfirmacao: 'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente. Ingresa tu contraseña para confirmar.',
+    novaTransacao: 'Nueva Transacción', copiarTransacao: 'Copiar Transacción', transacaoSalva: '¡Listo! Transacción guardada.',
   },
   fr: {
     transacoes: 'Transactions', carteiras: 'Portefeuilles', bancos: 'Banques', configuracoes: 'Paramètres',
@@ -138,6 +161,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: 'Importation terminée!', algoDeuErrado: 'Quelque chose a mal tourné',
     tentarNovamente: 'Réessayer', conectarOutroBanco: 'Connecter une autre banque',
     entrada: 'Revenu', saida: 'Dépense', copiar: 'Copier', duplicar: 'Dupliquer', mover: 'Déplacer', apagar: 'Supprimer',
+    nome: 'Nom', escolherTema: 'Choisir le thème', escolherMoeda: 'Choisir la devise', escolherIdioma: 'Choisir la langue',
+    salvar: 'Enregistrer', excluirMinhaConta: 'Supprimer mon compte',
+    excluirContaDesc: 'Supprime définitivement toutes vos données',
+    excluirContaConfirmacao: 'Cette action est irréversible. Toutes vos données seront supprimées définitivement. Entrez votre mot de passe pour confirmer.',
+    novaTransacao: 'Nouvelle Transaction', copiarTransacao: 'Copier la Transaction', transacaoSalva: 'Fait ! Transaction enregistrée.',
   },
   it: {
     transacoes: 'Transazioni', carteiras: 'Portafogli', bancos: 'Banche', configuracoes: 'Impostazioni',
@@ -155,6 +183,11 @@ const t: Record<Idioma, Translations> = {
     importacaoConcluida: 'Importazione completata!', algoDeuErrado: 'Qualcosa è andato storto',
     tentarNovamente: 'Riprova', conectarOutroBanco: 'Collega un\'altra banca',
     entrada: 'Entrata', saida: 'Uscita', copiar: 'Copia', duplicar: 'Duplica', mover: 'Sposta', apagar: 'Elimina',
+    nome: 'Nome', escolherTema: 'Scegli tema', escolherMoeda: 'Scegli valuta', escolherIdioma: 'Scegli lingua',
+    salvar: 'Salva', excluirMinhaConta: 'Elimina il mio account',
+    excluirContaDesc: 'Rimuove tutti i tuoi dati permanentemente',
+    excluirContaConfirmacao: 'Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati definitivamente. Inserisci la tua password per confermare.',
+    novaTransacao: 'Nuova Transazione', copiarTransacao: 'Copia Transazione', transacaoSalva: 'Fatto! Transazione salvata.',
   },
 };
 

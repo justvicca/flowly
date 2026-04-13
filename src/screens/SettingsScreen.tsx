@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { usePreferences, MOEDAS, IDIOMAS, type Tema, type Idioma } from '../contexts/PreferencesContext';
+import { usePreferences, useTranslation, MOEDAS, IDIOMAS, type Tema, type Idioma } from '../contexts/PreferencesContext';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -135,6 +135,7 @@ function PrimaryBtn({ children, onClick, disabled, danger }: {
 export function SettingsScreen() {
   const { usuario, logout } = useAuth();
   const { tema, moeda, idioma, setTema, setMoeda, setIdioma } = usePreferences();
+  const tr = useTranslation();
 
   const [modal, setModal] = useState<
     'nome' | 'senha' | 'moeda' | 'tema' | 'idioma' | 'excluir' | null
@@ -238,28 +239,28 @@ export function SettingsScreen() {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '8px 0 40px' }}>
       <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px' }}>
-        Configurações
+        {tr('configuracoes')}
       </h1>
 
       {/* Conta */}
-      <Section title="Conta">
+      <Section title={tr('conta')}>
         <Row
-          label="Nome"
+          label={tr('nome')}
           sublabel={usuario?.nome}
           right={<ChevronRight />}
           onClick={() => { setNovoNome(usuario?.nome ?? ''); setModal('nome'); }}
         />
         <Row
-          label="Email"
+          label={tr('email')}
           sublabel={usuario?.email}
           border={false}
         />
       </Section>
 
       {/* Segurança */}
-      <Section title="Segurança">
+      <Section title={tr('seguranca')}>
         <Row
-          label="Alterar senha"
+          label={tr('alterarSenha')}
           right={<ChevronRight />}
           onClick={() => setModal('senha')}
           border={false}
@@ -267,22 +268,22 @@ export function SettingsScreen() {
       </Section>
 
       {/* Aparência */}
-      <Section title="Aparência">
+      <Section title={tr('aparencia')}>
         <Row
-          label="Tema"
+          label={tr('tema')}
           sublabel={temas.find((t) => t.id === tema)?.label}
           right={<ChevronRight />}
           onClick={() => setModal('tema')}
         />
         <Row
-          label="Moeda"
+          label={tr('moeda')}
           sublabel={`${moeda.simbolo} — ${moeda.nome}`}
           right={<ChevronRight />}
           onClick={() => setModal('moeda')}
           border={false}
         />
         <Row
-          label="Idioma"
+          label={tr('idioma')}
           sublabel={IDIOMAS.find(i => i.codigo === idioma)?.nomeNativo}
           right={<ChevronRight />}
           onClick={() => setModal('idioma')}
@@ -291,9 +292,9 @@ export function SettingsScreen() {
       </Section>
 
       {/* Sessão */}
-      <Section title="Sessão">
+      <Section title={tr('sessao')}>
         <Row
-          label="Sair da conta"
+          label={tr('sairDaConta')}
           right={<ChevronRight />}
           onClick={() => logout()}
           border={false}
@@ -301,10 +302,10 @@ export function SettingsScreen() {
       </Section>
 
       {/* Zona de perigo */}
-      <Section title="Zona de perigo">
+      <Section title={tr('zonaDaPerigo')}>
         <Row
-          label="Excluir conta"
-          sublabel="Remove todos os seus dados permanentemente"
+          label={tr('excluirConta')}
+          sublabel={tr('excluirContaDesc')}
           danger
           right={<ChevronRight />}
           onClick={() => setModal('excluir')}
@@ -315,25 +316,25 @@ export function SettingsScreen() {
       {/* ── Modais ── */}
 
       {modal === 'nome' && (
-        <Modal title="Alterar nome" onClose={fechar}>
+        <Modal title={tr('alterarNome')} onClose={fechar}>
           <Input label="Novo nome" value={novoNome} onChange={(e) => setNovoNome(e.target.value)} />
           {feedback && <p style={{ color: feedback.includes('!') ? 'green' : '#e53935', fontSize: '13px', margin: '4px 0' }}>{feedback}</p>}
-          <PrimaryBtn onClick={salvarNome}>Salvar</PrimaryBtn>
+          <PrimaryBtn onClick={salvarNome}>{tr('salvar')}</PrimaryBtn>
         </Modal>
       )}
 
       {modal === 'senha' && (
-        <Modal title="Alterar senha" onClose={fechar}>
+        <Modal title={tr('alterarSenha')} onClose={fechar}>
           <Input label="Senha atual" type="password" value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} />
           <Input label="Nova senha" type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} />
           <Input label="Confirmar nova senha" type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} />
           {feedback && <p style={{ color: feedback.includes('!') ? 'green' : '#e53935', fontSize: '13px', margin: '4px 0' }}>{feedback}</p>}
-          <PrimaryBtn onClick={salvarSenha}>Salvar</PrimaryBtn>
+          <PrimaryBtn onClick={salvarSenha}>{tr('salvar')}</PrimaryBtn>
         </Modal>
       )}
 
       {modal === 'tema' && (
-        <Modal title="Escolher tema" onClose={fechar}>
+        <Modal title={tr('escolherTema')} onClose={fechar}>
           {temas.map((t) => (
             <button
               key={t.id}
@@ -362,7 +363,7 @@ export function SettingsScreen() {
       )}
 
       {modal === 'moeda' && (
-        <Modal title="Escolher moeda" onClose={fechar}>
+        <Modal title={tr('escolherMoeda')} onClose={fechar}>
           <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
             {MOEDAS.map((m) => (
               <button
@@ -392,7 +393,7 @@ export function SettingsScreen() {
       )}
 
       {modal === 'idioma' && (
-        <Modal title="Escolher idioma" onClose={fechar}>
+        <Modal title={tr('escolherIdioma')} onClose={fechar}>
           <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
             {IDIOMAS.map((i) => (
               <button
@@ -423,14 +424,13 @@ export function SettingsScreen() {
       )}
 
       {modal === 'excluir' && (
-        <Modal title="Excluir conta" onClose={fechar}>
+        <Modal title={tr('excluirConta')} onClose={fechar}>
           <p style={{ color: 'var(--text2)', fontSize: '14px', marginBottom: '16px' }}>
-            Esta ação é irreversível. Todos os seus dados serão apagados permanentemente.
-            Digite sua senha para confirmar.
+            {tr('excluirContaConfirmacao')}
           </p>
           <Input label="Senha" type="password" value={senhaExcluir} onChange={(e) => setSenhaExcluir(e.target.value)} />
           {feedback && <p style={{ color: '#e53935', fontSize: '13px', margin: '4px 0' }}>{feedback}</p>}
-          <PrimaryBtn danger onClick={excluirConta}>Excluir minha conta</PrimaryBtn>
+          <PrimaryBtn danger onClick={excluirConta}>{tr('excluirMinhaConta')}</PrimaryBtn>
         </Modal>
       )}
     </div>
