@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { useTranslation } from '../../contexts/PreferencesContext';
 
 interface ForgotPasswordScreenProps {
   onVoltar: () => void;
@@ -7,6 +8,7 @@ interface ForgotPasswordScreenProps {
 
 export function ForgotPasswordScreen({ onVoltar }: ForgotPasswordScreenProps): JSX.Element {
   const { recuperarSenha, carregando } = useAuth();
+  const tr = useTranslation();
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
   const [emailEnviado, setEmailEnviado] = useState('');
@@ -15,12 +17,10 @@ export function ForgotPasswordScreen({ onVoltar }: ForgotPasswordScreenProps): J
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErroEmail('');
-
     if (!email.includes('@') || !email.includes('.')) {
-      setErroEmail('Digite um email válido, como exemplo@email.com.');
+      setErroEmail(tr('erroEmailInvalido'));
       return;
     }
-
     await recuperarSenha(email);
     setEmailEnviado(email);
     setEnviado(true);
@@ -30,10 +30,10 @@ export function ForgotPasswordScreen({ onVoltar }: ForgotPasswordScreenProps): J
     return (
       <div data-testid="forgot-password-screen">
         <p role="status">
-          Enviamos um link para {emailEnviado}. Verifique sua caixa de entrada.
+          {tr('linkEnviado')} {emailEnviado}. {tr('verificarCaixa')}
         </p>
         <button type="button" onClick={onVoltar}>
-          Voltar para login
+          {tr('voltarLogin')}
         </button>
       </div>
     );
@@ -41,29 +41,20 @@ export function ForgotPasswordScreen({ onVoltar }: ForgotPasswordScreenProps): J
 
   return (
     <div data-testid="forgot-password-screen">
-      <h1>Recuperar senha</h1>
-
+      <h1>{tr('recuperarSenha')}</h1>
       <form onSubmit={handleSubmit} noValidate>
         <div>
-          <label htmlFor="forgot-email">Email</label>
-          <input
-            id="forgot-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            disabled={carregando}
-          />
+          <label htmlFor="forgot-email">{tr('email')}</label>
+          <input id="forgot-email" type="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} autoComplete="email" disabled={carregando} />
           {erroEmail && <span role="alert">{erroEmail}</span>}
         </div>
-
         <button type="submit" disabled={carregando}>
-          {carregando ? 'Enviando...' : 'Enviar link de recuperação'}
+          {carregando ? tr('enviando') : tr('enviarLink')}
         </button>
       </form>
-
       <button type="button" onClick={onVoltar} disabled={carregando}>
-        Voltar para login
+        {tr('voltarLogin')}
       </button>
     </div>
   );

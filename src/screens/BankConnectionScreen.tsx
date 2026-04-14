@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useRepository } from '../repository/RepositoryContext';
+import { useTranslation } from '../contexts/PreferencesContext';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -72,6 +73,7 @@ export function BankConnectionScreen() {
   const { sessao } = useAuth();
   const repo = useRepository();
   const userId = sessao?.usuario.id ?? '';
+  const tr = useTranslation();
 
   const [etapa, setEtapa] = useState<'inicio' | 'conectando' | 'importando' | 'concluido' | 'erro'>('inicio');
   const [mensagem, setMensagem] = useState('');
@@ -102,7 +104,7 @@ export function BankConnectionScreen() {
         connectToken: accessToken,
         onSuccess: async (itemData: { item: PluggyItem }) => {
           setEtapa('importando');
-          setMensagem('Buscando suas transações...');
+          setMensagem(tr('buscandoTransacoes'));
           try {
             const accounts = await getAccounts(itemData.item.id);
             let total = 0;
@@ -178,7 +180,7 @@ export function BankConnectionScreen() {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '8px 0 40px' }}>
       <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text)', marginBottom: '24px' }}>
-        Conectar banco
+        {tr('conectarBancoTitulo')}
       </h1>
 
       <div style={card}>
@@ -186,13 +188,13 @@ export function BankConnectionScreen() {
           <>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏦</div>
             <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>
-              Conecte sua conta bancária
+              {tr('conectarContaBancaria')}
             </p>
             <p style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.6 }}>
-              Importe automaticamente suas transações dos últimos 2 meses. Suporta Nubank, Itaú, Bradesco, Santander e mais de 100 bancos brasileiros.
+              {tr('conectarBancoDesc')}
             </p>
             <button style={btn} onClick={abrirWidget}>
-              Conectar banco
+              {tr('conectarBanco')}
             </button>
           </>
         )}
@@ -201,7 +203,7 @@ export function BankConnectionScreen() {
           <>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔗</div>
             <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)' }}>
-              Abrindo conexão segura...
+              {tr('abrindoConexao')}
             </p>
           </>
         )}
@@ -210,7 +212,7 @@ export function BankConnectionScreen() {
           <>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
             <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>
-              Importando transações
+              {tr('importandoTransacoes')}
             </p>
             <p style={{ fontSize: '14px', color: 'var(--text2)' }}>{mensagem}</p>
           </>
@@ -220,13 +222,13 @@ export function BankConnectionScreen() {
           <>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
             <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>
-              Importação concluída!
+              {tr('importacaoConcluida')}
             </p>
             <p style={{ fontSize: '14px', color: 'var(--text2)' }}>
-              {importados} transações importadas com sucesso.
+              {importados} {tr('transacoesImportadas')}
             </p>
             <button style={btn} onClick={() => setEtapa('inicio')}>
-              Conectar outro banco
+              {tr('conectarOutroBanco')}
             </button>
           </>
         )}
@@ -235,26 +237,18 @@ export function BankConnectionScreen() {
           <>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>❌</div>
             <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '8px' }}>
-              Algo deu errado
+              {tr('algoDeuErrado')}
             </p>
             <p style={{ fontSize: '14px', color: 'var(--text2)' }}>{mensagem}</p>
             <button style={btn} onClick={() => setEtapa('inicio')}>
-              Tentar novamente
+              {tr('tentarNovamente')}
             </button>
           </>
         )}
       </div>
 
-      <div style={{
-        marginTop: '24px',
-        padding: '16px',
-        background: 'var(--surface2)',
-        borderRadius: '12px',
-        fontSize: '13px',
-        color: 'var(--text2)',
-        lineHeight: 1.6,
-      }}>
-        🔒 Seus dados bancários são acessados de forma segura via Open Finance. O Flowly nunca armazena suas credenciais bancárias.
+      <div style={{ marginTop: '24px', padding: '16px', background: 'var(--surface2)', borderRadius: '12px', fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6 }}>
+        {tr('segurancaBancaria')}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import type { Transaction } from '../../types/flowly';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { TransactionItem } from './TransactionItem';
-import { useTranslation } from '../../contexts/PreferencesContext';
+import { useTranslation, usePreferences } from '../../contexts/PreferencesContext';
 
 interface TransactionListProps {
   transacoes: Transaction[];
@@ -14,13 +14,6 @@ interface TransactionListProps {
 }
 
 type Filtro = 'todos' | 'entrada' | 'saida' | 'fixo' | 'nao-fixo';
-
-function nomeMes(mesStr: string): string {
-  const [ano, mes] = mesStr.split('-');
-  const data = new Date(Number(ano), Number(mes) - 1, 1);
-  const mesNome = data.toLocaleString('pt-BR', { month: 'long' });
-  return `${mesNome.charAt(0).toUpperCase()}${mesNome.slice(1)} ${ano}`;
-}
 
 function mesKey(data: string): string {
   return data.slice(0, 7); // "YYYY-MM"
@@ -39,6 +32,16 @@ export function TransactionList({
   onRemover,
 }: TransactionListProps) {
   const tr = useTranslation();
+  const { idioma } = usePreferences();
+
+  function nomeMes(mesStr: string): string {
+    const [ano, mes] = mesStr.split('-');
+    const localeMap: Record<string, string> = { pt: 'pt-BR', en: 'en-US', de: 'de-DE', es: 'es-ES', fr: 'fr-FR', it: 'it-IT' };
+    const locale = localeMap[idioma] ?? 'pt-BR';
+    const data = new Date(Number(ano), Number(mes) - 1, 1);
+    const mesNome = data.toLocaleString(locale, { month: 'long' });
+    return `${mesNome.charAt(0).toUpperCase()}${mesNome.slice(1)} ${ano}`;
+  }
   const FILTROS: { id: Filtro; label: string }[] = [
     { id: 'todos', label: tr('todos') },
     { id: 'entrada', label: tr('ganhos') },
@@ -182,27 +185,14 @@ export function TransactionList({
 
       {/* Mensagem de sucesso após remoção */}
       {mensagemSucesso && (
-        <div
-          role="status"
-          aria-live="polite"
-          style={{
-            padding: '10px 16px',
-            marginBottom: '16px',
-            background: '#e8f5e9',
-            border: '1px solid #a5d6a7',
-            borderRadius: '4px',
-            color: '#2e7d32',
-            fontWeight: 500,
-            fontSize: '14px',
-          }}
-        >
-          Pronto! A transação foi removida.
+        <div role="status" aria-live="polite" style={{ padding: '10px 16px', marginBottom: '16px', background: '#e8f5e9', border: '1px solid #a5d6a7', borderRadius: '4px', color: '#2e7d32', fontWeight: 500, fontSize: '14px' }}>
+          {tr('transacaoRemovida')}
         </div>
       )}
 
       {vazio && (
         <p style={{ color: '#757575', textAlign: 'center', padding: '24px 0' }}>
-          Nenhuma transação encontrada.
+          {tr('nenhumaTransacao')}
         </p>
       )}
 
@@ -248,7 +238,7 @@ export function TransactionList({
 
       {confirmandoId && (
         <ConfirmDialog
-          message="Tem certeza que deseja apagar esta transação? Esta ação não pode ser desfeita."
+          message={tr('confirmarRemocao')}
           onConfirm={handleConfirmarRemocao}
           onCancel={() => setConfirmandoId(null)}
         />

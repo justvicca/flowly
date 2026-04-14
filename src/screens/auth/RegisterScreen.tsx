@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { useTranslation } from '../../contexts/PreferencesContext';
 
 function GoogleIcon() {
   return (
@@ -72,6 +73,7 @@ const s = {
 
 export function RegisterScreen({ onVoltar }: RegisterScreenProps): JSX.Element {
   const { registrarComEmail, loginComGoogle, carregando, erro } = useAuth();
+  const tr = useTranslation();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -83,11 +85,11 @@ export function RegisterScreen({ onVoltar }: RegisterScreenProps): JSX.Element {
   function validar(): boolean {
     let ok = true;
     setErroNome(''); setErroEmail(''); setErroSenha('');
-    if (!nome.trim()) { setErroNome('Digite seu nome completo.'); ok = false; }
+    if (!nome.trim()) { setErroNome(tr('erroNomeVazio')); ok = false; }
     if (!email.includes('@') || !email.slice(email.indexOf('@')).includes('.')) {
-      setErroEmail('Digite um email válido, como exemplo@email.com.'); ok = false;
+      setErroEmail(tr('erroEmailInvalido')); ok = false;
     }
-    if (senha.length < 8) { setErroSenha('A senha precisa ter pelo menos 8 caracteres.'); ok = false; }
+    if (senha.length < 8) { setErroSenha(tr('erroSenhaCurta')); ok = false; }
     return ok;
   }
 
@@ -100,31 +102,28 @@ export function RegisterScreen({ onVoltar }: RegisterScreenProps): JSX.Element {
   return (
     <div data-testid="register-screen" style={s.page}>
       <div style={s.card}>
-        <p style={s.title}>Criar conta no Flowly</p>
+        <p style={s.title}>{tr('criarContaFlowly')}</p>
 
         <form onSubmit={handleSubmit} noValidate>
-          {/* Nome */}
           <div style={s.inputWrap}>
-            <input id="register-nome" type="text" placeholder="Nome completo" value={nome}
+            <input id="register-nome" type="text" placeholder={tr('placeholder_nomeCompleto')} value={nome}
               onChange={(e) => setNome(e.target.value)} autoComplete="name" disabled={carregando}
-              style={s.input} aria-label="Nome completo" />
+              style={s.input} aria-label={tr('nomeCompleto')} />
           </div>
           {erroNome && <p style={s.errorText} role="alert">{erroNome}</p>}
 
-          {/* Email */}
           <div style={s.inputWrap}>
-            <input id="register-email" type="email" placeholder="Email" value={email}
+            <input id="register-email" type="email" placeholder={tr('placeholder_email')} value={email}
               onChange={(e) => setEmail(e.target.value)} autoComplete="email" disabled={carregando}
-              style={s.input} aria-label="Email" />
+              style={s.input} aria-label={tr('email')} />
           </div>
           {erroEmail && <p style={s.errorText} role="alert">{erroEmail}</p>}
 
-          {/* Senha */}
           <div style={s.inputWrap}>
-            <input id="register-senha" type={mostrarSenha ? 'text' : 'password'} placeholder="Senha (mín. 8 caracteres)"
+            <input id="register-senha" type={mostrarSenha ? 'text' : 'password'} placeholder={tr('placeholder_senhaMin')}
               value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="new-password"
-              disabled={carregando} style={s.input} aria-label="Senha" />
-            <button type="button" aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+              disabled={carregando} style={s.input} aria-label={tr('senha')} />
+            <button type="button" aria-label={mostrarSenha ? tr('ocultarSenha') : tr('mostrarSenha')}
               onClick={() => setMostrarSenha((v) => !v)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', padding: 0, display: 'flex' }}>
               {mostrarSenha ? <EyeIcon /> : <EyeOffIcon />}
@@ -136,23 +135,23 @@ export function RegisterScreen({ onVoltar }: RegisterScreenProps): JSX.Element {
 
           <button type="submit" disabled={carregando}
             style={{ ...s.signInBtn, opacity: carregando ? 0.7 : 1, marginTop: '12px' }}>
-            {carregando ? 'Criando conta...' : 'Criar conta'}
+            {carregando ? tr('criandoConta') : tr('criarConta')}
           </button>
         </form>
 
-        <div style={s.divider}>Ou continue com</div>
+        <div style={s.divider}>{tr('ouContinueCom')}</div>
 
         <div style={s.socialRow}>
-          <button type="button" aria-label="Criar conta com Google" onClick={() => loginComGoogle()}
+          <button type="button" aria-label={`${tr('criarConta')} com Google`} onClick={() => loginComGoogle()}
             disabled={carregando} style={s.socialBtn}>
             <GoogleIcon />
           </button>
         </div>
 
         <div style={s.loginRow}>
-          Já tem conta?{' '}
+          {tr('jaTemConta')}{' '}
           <button type="button" style={s.loginLink} onClick={onVoltar}>
-            Entrar
+            {tr('entrar')}
           </button>
         </div>
       </div>

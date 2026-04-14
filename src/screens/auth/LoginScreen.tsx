@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { useTranslation } from '../../contexts/PreferencesContext';
 import { RegisterScreen } from './RegisterScreen';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
 
@@ -108,6 +109,7 @@ function useTela(inicial: Tela) {
 
 export function LoginScreen(): JSX.Element {
   const { loginComEmail, loginComGoogle, carregando, erro } = useAuth();
+  const tr = useTranslation();
   const [tela, setTela] = useTela('login');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -122,10 +124,10 @@ export function LoginScreen(): JSX.Element {
     let ok = true;
     setErroEmail(''); setErroSenha('');
     if (!email.includes('@') || !email.slice(email.indexOf('@')).includes('.')) {
-      setErroEmail('Digite um email válido, como exemplo@email.com.'); ok = false;
+      setErroEmail(tr('erroEmailInvalido')); ok = false;
     }
     if (senha.length < 8) {
-      setErroSenha('A senha precisa ter pelo menos 8 caracteres.'); ok = false;
+      setErroSenha(tr('erroSenhaCurta')); ok = false;
     }
     return ok;
   }
@@ -142,21 +144,21 @@ export function LoginScreen(): JSX.Element {
   return (
     <div data-testid="login-screen" style={s.page}>
       <div style={s.card}>
-        <p style={s.title}>Bem-vindo ao Flowly</p>
+        <p style={s.title}>{tr('bemVindoFlowly')}</p>
 
         <form onSubmit={handleSubmit} noValidate>
           <div style={s.inputWrap}>
-            <input id="login-email" type="email" placeholder="Email" value={email}
+            <input id="login-email" type="email" placeholder={tr('placeholder_email')} value={email}
               onChange={(e) => setEmail(e.target.value)} autoComplete="email"
-              disabled={carregando} style={s.input} aria-label="Email" />
+              disabled={carregando} style={s.input} aria-label={tr('email')} />
           </div>
           {erroEmail && <p style={s.errorText} role="alert">{erroEmail}</p>}
 
           <div style={s.inputWrap}>
-            <input id="login-senha" type={mostrarSenha ? 'text' : 'password'} placeholder="Senha"
+            <input id="login-senha" type={mostrarSenha ? 'text' : 'password'} placeholder={tr('placeholder_senha')}
               value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="current-password"
-              disabled={carregando} style={s.input} aria-label="Senha" />
-            <button type="button" aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+              disabled={carregando} style={s.input} aria-label={tr('senha')} />
+            <button type="button" aria-label={mostrarSenha ? tr('ocultarSenha') : tr('mostrarSenha')}
               onClick={() => setMostrarSenha((v) => !v)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', padding: 0, display: 'flex' }}>
               {mostrarSenha ? <EyeIcon /> : <EyeOffIcon />}
@@ -166,7 +168,7 @@ export function LoginScreen(): JSX.Element {
 
           <div style={s.forgotRow}>
             <button type="button" style={s.forgotBtn} onClick={() => setTela('forgot')}>
-              Esqueci minha senha
+              {tr('esqueceuSenha')}
             </button>
           </div>
 
@@ -174,23 +176,23 @@ export function LoginScreen(): JSX.Element {
 
           <button type="submit" disabled={carregando}
             style={{ ...s.signInBtn, opacity: carregando ? 0.7 : 1 }}>
-            {carregando ? 'Entrando...' : 'Entrar'}
+            {carregando ? tr('entrando') : tr('entrar')}
           </button>
         </form>
 
-        <div style={s.divider}>Ou continue com</div>
+        <div style={s.divider}>{tr('ouContinueCom')}</div>
 
         <div style={s.socialRow}>
-          <button type="button" aria-label="Entrar com Google" onClick={() => loginComGoogle()}
+          <button type="button" aria-label={`${tr('entrar')} com Google`} onClick={() => loginComGoogle()}
             disabled={carregando} style={s.socialBtn}>
             <GoogleIcon />
           </button>
         </div>
 
         <div style={s.registerRow}>
-          Não tem conta?{' '}
+          {tr('naoTemConta')}{' '}
           <button type="button" style={s.registerLink} onClick={() => setTela('register')}>
-            Criar conta
+            {tr('criarConta')}
           </button>
         </div>
       </div>

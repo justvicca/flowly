@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Wallet } from '../../types/flowly';
 import { WalletCard } from './WalletCard';
-import { usePreferences } from '../../contexts/PreferencesContext';
+import { usePreferences, useTranslation } from '../../contexts/PreferencesContext';
 
 interface WalletListProps {
   carteiras: Wallet[];
@@ -33,6 +33,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const { moeda } = usePreferences();
+  const tr = useTranslation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,7 +67,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
         }}
         aria-label="Saldo total consolidado"
       >
-        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text, #424242)' }}>Saldo Total</span>
+        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text, #424242)' }}>{tr('saldoTotalLabel')}</span>
         <span
           style={{
             fontWeight: 700,
@@ -81,7 +82,7 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
       {/* Lista de carteiras — Requisito 5.1 */}
       {carteiras.length === 0 ? (
         <p style={{ color: 'var(--text2, #757575)', textAlign: 'center', padding: '16px 0' }}>
-          Nenhuma carteira cadastrada.
+          {tr('nenhumaCarteira')}
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -97,14 +98,12 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
         onClick={() => { setMostrarForm((v) => !v); setErro(null); }}
         style={btnBase}
         aria-expanded={mostrarForm}
-        aria-label="Adicionar carteira"
+        aria-label={tr('adicionarCarteiraLabel')}
       >
-        {/* Plus icon */}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Adicionar Carteira
+        {tr('adicionarCarteiraLabel')}
       </button>
 
       {/* Formulário inline — Requisito 5.2 */}
@@ -123,25 +122,12 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
           aria-label="Formulário para adicionar carteira"
         >
           <label htmlFor="nova-carteira-nome" style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text, #333)' }}>
-            Nome da carteira
+            {tr('nomeCarteira')}
           </label>
-          <input
-            id="nova-carteira-nome"
-            type="text"
-            value={nomeNovo}
-            onChange={(e) => setNomeNovo(e.target.value)}
-            placeholder="Ex: Banco do Brasil"
-            disabled={salvando}
-            style={{
-              padding: '8px 10px',
-              border: '1px solid var(--border, #ccc)',
-              borderRadius: '4px',
-              fontSize: '14px',
-              background: 'var(--surface, #fff)',
-              color: 'var(--text, #333)',
-            }}
-            autoFocus
-          />
+          <input id="nova-carteira-nome" type="text" value={nomeNovo} onChange={(e) => setNomeNovo(e.target.value)}
+            placeholder={tr('placeholder_carteira')} disabled={salvando}
+            style={{ padding: '8px 10px', border: '1px solid var(--border, #ccc)', borderRadius: '4px', fontSize: '14px', background: 'var(--surface, #fff)', color: 'var(--text, #333)' }}
+            autoFocus />
           {/* Requisito 5.3 — erro de nome duplicado */}
           {erro && (
             <p role="alert" style={{ color: '#c62828', fontSize: '13px', margin: 0 }}>
@@ -152,25 +138,12 @@ export function WalletList({ carteiras, saldoTotal, onAdicionarCarteira }: Walle
             <button
               type="submit"
               disabled={salvando || !nomeNovo.trim()}
-              style={{
-                ...btnBase,
-                opacity: salvando || !nomeNovo.trim() ? 0.6 : 1,
-                cursor: salvando || !nomeNovo.trim() ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {salvando ? 'Salvando...' : 'Salvar'}
+              style={{ ...btnBase, opacity: salvando || !nomeNovo.trim() ? 0.6 : 1, cursor: salvando || !nomeNovo.trim() ? 'not-allowed' : 'pointer' }}>
+              {salvando ? tr('salvandoCarteira') : tr('salvar')}
             </button>
-            <button
-              type="button"
-              onClick={() => { setMostrarForm(false); setNomeNovo(''); setErro(null); }}
-              style={{
-                ...btnBase,
-                background: 'var(--surface, #fff)',
-                color: 'var(--text2, #555)',
-                borderColor: 'var(--border, #ccc)',
-              }}
-            >
-              Cancelar
+            <button type="button" onClick={() => { setMostrarForm(false); setNomeNovo(''); setErro(null); }}
+              style={{ ...btnBase, background: 'var(--surface, #fff)', color: 'var(--text2, #555)', borderColor: 'var(--border, #ccc)' }}>
+              {tr('cancelarCarteira')}
             </button>
           </div>
         </form>

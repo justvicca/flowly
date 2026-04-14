@@ -52,7 +52,26 @@ export type TranslationKey =
   | 'conectarOutroBanco' | 'entrada' | 'saida' | 'copiar' | 'duplicar' | 'mover' | 'apagar'
   | 'nome' | 'escolherTema' | 'escolherMoeda' | 'escolherIdioma' | 'salvar'
   | 'excluirMinhaConta' | 'excluirContaDesc' | 'excluirContaConfirmacao'
-  | 'novaTransacao' | 'copiarTransacao' | 'transacaoSalva';
+  | 'novaTransacao' | 'copiarTransacao' | 'transacaoSalva'
+  // TransactionForm
+  | 'descricao' | 'valor' | 'data' | 'tipo' | 'carteira' | 'recorrencia' | 'cancelar'
+  | 'salvando' | 'transacaoSalvaForm' | 'placeholder_descricao' | 'placeholder_valor'
+  // TransactionList
+  | 'nenhumaTransacao' | 'transacaoRemovida' | 'confirmarRemocao'
+  // WalletList
+  | 'saldoTotalLabel' | 'nenhumaCarteira' | 'adicionarCarteiraLabel' | 'nomeCarteira'
+  | 'placeholder_carteira' | 'salvandoCarteira' | 'cancelarCarteira'
+  // ConfirmDialog
+  | 'confirmar'
+  // BankConnectionScreen
+  | 'conectarBancoTitulo' | 'conectarContaBancaria' | 'abrindoConexao' | 'importandoTransacoes'
+  | 'buscandoTransacoes' | 'transacoesImportadas' | 'segurancaBancaria'
+  // Auth screens
+  | 'bemVindoFlowly' | 'criarContaFlowly' | 'entrando' | 'criandoConta'
+  | 'esqueceuSenha' | 'recuperarSenha' | 'enviarLink' | 'enviando' | 'voltarLogin'
+  | 'linkEnviado' | 'verificarCaixa' | 'ocultarSenha' | 'mostrarSenha'
+  | 'placeholder_email' | 'placeholder_senha' | 'placeholder_senhaMin' | 'placeholder_nomeCompleto'
+  | 'erroNomeVazio' | 'erroEmailInvalido' | 'erroSenhaCurta';
 
 type Translations = Record<TranslationKey, string>;
 
@@ -78,6 +97,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Remove todos os seus dados permanentemente',
     excluirContaConfirmacao: 'Esta ação é irreversível. Todos os seus dados serão apagados permanentemente. Digite sua senha para confirmar.',
     novaTransacao: 'Nova Transação', copiarTransacao: 'Copiar Transação', transacaoSalva: 'Pronto! A transação foi salva.',
+    descricao: 'Descrição', valor: 'Valor (R$)', data: 'Data', tipo: 'Tipo', carteira: 'Carteira',
+    recorrencia: 'Recorrência', cancelar: 'Cancelar', salvando: 'Salvando...', transacaoSalvaForm: '✓ Pronto! A transação foi salva.',
+    placeholder_descricao: 'Ex: Aluguel, Salário...', placeholder_valor: '0,00',
+    nenhumaTransacao: 'Nenhuma transação encontrada.', transacaoRemovida: 'Pronto! A transação foi removida.',
+    confirmarRemocao: 'Tem certeza que deseja apagar esta transação? Esta ação não pode ser desfeita.',
+    saldoTotalLabel: 'Saldo Total', nenhumaCarteira: 'Nenhuma carteira cadastrada.',
+    adicionarCarteiraLabel: 'Adicionar Carteira', nomeCarteira: 'Nome da carteira',
+    placeholder_carteira: 'Ex: Banco do Brasil', salvandoCarteira: 'Salvando...', cancelarCarteira: 'Cancelar',
+    confirmar: 'Confirmar',
+    conectarBancoTitulo: 'Conectar banco', conectarContaBancaria: 'Conecte sua conta bancária',
+    abrindoConexao: 'Abrindo conexão segura...', importandoTransacoes: 'Importando transações',
+    buscandoTransacoes: 'Buscando suas transações...', transacoesImportadas: 'transações importadas com sucesso.',
+    segurancaBancaria: '🔒 Seus dados bancários são acessados de forma segura via Open Finance. O Flowly nunca armazena suas credenciais bancárias.',
+    bemVindoFlowly: 'Bem-vindo ao Flowly', criarContaFlowly: 'Criar conta no Flowly',
+    entrando: 'Entrando...', criandoConta: 'Criando conta...',
+    esqueceuSenha: 'Esqueci minha senha', recuperarSenha: 'Recuperar senha',
+    enviarLink: 'Enviar link de recuperação', enviando: 'Enviando...', voltarLogin: 'Voltar para login',
+    linkEnviado: 'Enviamos um link para', verificarCaixa: 'Verifique sua caixa de entrada.',
+    ocultarSenha: 'Ocultar senha', mostrarSenha: 'Mostrar senha',
+    placeholder_email: 'Email', placeholder_senha: 'Senha', placeholder_senhaMin: 'Senha (mín. 8 caracteres)',
+    placeholder_nomeCompleto: 'Nome completo',
+    erroNomeVazio: 'Digite seu nome completo.', erroEmailInvalido: 'Digite um email válido, como exemplo@email.com.',
+    erroSenhaCurta: 'A senha precisa ter pelo menos 8 caracteres.',
   },
   en: {
     transacoes: 'Transactions', carteiras: 'Wallets', bancos: 'Banks', configuracoes: 'Settings',
@@ -100,6 +142,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Permanently removes all your data',
     excluirContaConfirmacao: 'This action is irreversible. All your data will be permanently deleted. Enter your password to confirm.',
     novaTransacao: 'New Transaction', copiarTransacao: 'Copy Transaction', transacaoSalva: 'Done! Transaction saved.',
+    descricao: 'Description', valor: 'Amount', data: 'Date', tipo: 'Type', carteira: 'Wallet',
+    recorrencia: 'Recurrence', cancelar: 'Cancel', salvando: 'Saving...', transacaoSalvaForm: '✓ Done! Transaction saved.',
+    placeholder_descricao: 'E.g.: Rent, Salary...', placeholder_valor: '0.00',
+    nenhumaTransacao: 'No transactions found.', transacaoRemovida: 'Done! Transaction removed.',
+    confirmarRemocao: 'Are you sure you want to delete this transaction? This action cannot be undone.',
+    saldoTotalLabel: 'Total Balance', nenhumaCarteira: 'No wallets registered.',
+    adicionarCarteiraLabel: 'Add Wallet', nomeCarteira: 'Wallet name',
+    placeholder_carteira: 'E.g.: Bank of America', salvandoCarteira: 'Saving...', cancelarCarteira: 'Cancel',
+    confirmar: 'Confirm',
+    conectarBancoTitulo: 'Connect bank', conectarContaBancaria: 'Connect your bank account',
+    abrindoConexao: 'Opening secure connection...', importandoTransacoes: 'Importing transactions',
+    buscandoTransacoes: 'Fetching your transactions...', transacoesImportadas: 'transactions imported successfully.',
+    segurancaBancaria: '🔒 Your banking data is accessed securely via Open Finance. Flowly never stores your banking credentials.',
+    bemVindoFlowly: 'Welcome to Flowly', criarContaFlowly: 'Create a Flowly account',
+    entrando: 'Signing in...', criandoConta: 'Creating account...',
+    esqueceuSenha: 'Forgot my password', recuperarSenha: 'Recover password',
+    enviarLink: 'Send recovery link', enviando: 'Sending...', voltarLogin: 'Back to login',
+    linkEnviado: 'We sent a link to', verificarCaixa: 'Check your inbox.',
+    ocultarSenha: 'Hide password', mostrarSenha: 'Show password',
+    placeholder_email: 'Email', placeholder_senha: 'Password', placeholder_senhaMin: 'Password (min. 8 characters)',
+    placeholder_nomeCompleto: 'Full name',
+    erroNomeVazio: 'Enter your full name.', erroEmailInvalido: 'Enter a valid email, like example@email.com.',
+    erroSenhaCurta: 'Password must be at least 8 characters.',
   },
   de: {
     transacoes: 'Transaktionen', carteiras: 'Konten', bancos: 'Banken', configuracoes: 'Einstellungen',
@@ -122,6 +187,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Löscht alle Ihre Daten dauerhaft',
     excluirContaConfirmacao: 'Diese Aktion ist unwiderruflich. Alle Ihre Daten werden dauerhaft gelöscht. Geben Sie Ihr Passwort zur Bestätigung ein.',
     novaTransacao: 'Neue Transaktion', copiarTransacao: 'Transaktion kopieren', transacaoSalva: 'Fertig! Transaktion gespeichert.',
+    descricao: 'Beschreibung', valor: 'Betrag', data: 'Datum', tipo: 'Typ', carteira: 'Konto',
+    recorrencia: 'Wiederholung', cancelar: 'Abbrechen', salvando: 'Speichern...', transacaoSalvaForm: '✓ Fertig! Transaktion gespeichert.',
+    placeholder_descricao: 'z.B.: Miete, Gehalt...', placeholder_valor: '0,00',
+    nenhumaTransacao: 'Keine Transaktionen gefunden.', transacaoRemovida: 'Fertig! Transaktion gelöscht.',
+    confirmarRemocao: 'Möchten Sie diese Transaktion wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+    saldoTotalLabel: 'Gesamtguthaben', nenhumaCarteira: 'Keine Konten registriert.',
+    adicionarCarteiraLabel: 'Konto hinzufügen', nomeCarteira: 'Kontoname',
+    placeholder_carteira: 'z.B.: Deutsche Bank', salvandoCarteira: 'Speichern...', cancelarCarteira: 'Abbrechen',
+    confirmar: 'Bestätigen',
+    conectarBancoTitulo: 'Bank verbinden', conectarContaBancaria: 'Bankkonto verbinden',
+    abrindoConexao: 'Sichere Verbindung wird geöffnet...', importandoTransacoes: 'Transaktionen werden importiert',
+    buscandoTransacoes: 'Transaktionen werden abgerufen...', transacoesImportadas: 'Transaktionen erfolgreich importiert.',
+    segurancaBancaria: '🔒 Ihre Bankdaten werden sicher über Open Finance abgerufen. Flowly speichert niemals Ihre Bankdaten.',
+    bemVindoFlowly: 'Willkommen bei Flowly', criarContaFlowly: 'Flowly-Konto erstellen',
+    entrando: 'Anmelden...', criandoConta: 'Konto wird erstellt...',
+    esqueceuSenha: 'Passwort vergessen', recuperarSenha: 'Passwort wiederherstellen',
+    enviarLink: 'Wiederherstellungslink senden', enviando: 'Senden...', voltarLogin: 'Zurück zur Anmeldung',
+    linkEnviado: 'Wir haben einen Link gesendet an', verificarCaixa: 'Überprüfen Sie Ihren Posteingang.',
+    ocultarSenha: 'Passwort verbergen', mostrarSenha: 'Passwort anzeigen',
+    placeholder_email: 'E-Mail', placeholder_senha: 'Passwort', placeholder_senhaMin: 'Passwort (mind. 8 Zeichen)',
+    placeholder_nomeCompleto: 'Vollständiger Name',
+    erroNomeVazio: 'Geben Sie Ihren vollständigen Namen ein.', erroEmailInvalido: 'Geben Sie eine gültige E-Mail ein, z.B. beispiel@email.com.',
+    erroSenhaCurta: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
   },
   es: {
     transacoes: 'Transacciones', carteiras: 'Carteras', bancos: 'Bancos', configuracoes: 'Configuración',
@@ -144,6 +232,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Elimina todos tus datos permanentemente',
     excluirContaConfirmacao: 'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente. Ingresa tu contraseña para confirmar.',
     novaTransacao: 'Nueva Transacción', copiarTransacao: 'Copiar Transacción', transacaoSalva: '¡Listo! Transacción guardada.',
+    descricao: 'Descripción', valor: 'Monto', data: 'Fecha', tipo: 'Tipo', carteira: 'Cartera',
+    recorrencia: 'Recurrencia', cancelar: 'Cancelar', salvando: 'Guardando...', transacaoSalvaForm: '✓ ¡Listo! Transacción guardada.',
+    placeholder_descricao: 'Ej: Alquiler, Salario...', placeholder_valor: '0,00',
+    nenhumaTransacao: 'No se encontraron transacciones.', transacaoRemovida: '¡Listo! Transacción eliminada.',
+    confirmarRemocao: '¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.',
+    saldoTotalLabel: 'Saldo total', nenhumaCarteira: 'No hay carteras registradas.',
+    adicionarCarteiraLabel: 'Agregar cartera', nomeCarteira: 'Nombre de la cartera',
+    placeholder_carteira: 'Ej: Banco Santander', salvandoCarteira: 'Guardando...', cancelarCarteira: 'Cancelar',
+    confirmar: 'Confirmar',
+    conectarBancoTitulo: 'Conectar banco', conectarContaBancaria: 'Conecta tu cuenta bancaria',
+    abrindoConexao: 'Abriendo conexión segura...', importandoTransacoes: 'Importando transacciones',
+    buscandoTransacoes: 'Buscando tus transacciones...', transacoesImportadas: 'transacciones importadas con éxito.',
+    segurancaBancaria: '🔒 Tus datos bancarios se acceden de forma segura a través de Open Finance. Flowly nunca almacena tus credenciales bancarias.',
+    bemVindoFlowly: 'Bienvenido a Flowly', criarContaFlowly: 'Crear cuenta en Flowly',
+    entrando: 'Iniciando sesión...', criandoConta: 'Creando cuenta...',
+    esqueceuSenha: 'Olvidé mi contraseña', recuperarSenha: 'Recuperar contraseña',
+    enviarLink: 'Enviar enlace de recuperación', enviando: 'Enviando...', voltarLogin: 'Volver al inicio de sesión',
+    linkEnviado: 'Enviamos un enlace a', verificarCaixa: 'Revisa tu bandeja de entrada.',
+    ocultarSenha: 'Ocultar contraseña', mostrarSenha: 'Mostrar contraseña',
+    placeholder_email: 'Correo', placeholder_senha: 'Contraseña', placeholder_senhaMin: 'Contraseña (mín. 8 caracteres)',
+    placeholder_nomeCompleto: 'Nombre completo',
+    erroNomeVazio: 'Ingresa tu nombre completo.', erroEmailInvalido: 'Ingresa un correo válido, como ejemplo@email.com.',
+    erroSenhaCurta: 'La contraseña debe tener al menos 8 caracteres.',
   },
   fr: {
     transacoes: 'Transactions', carteiras: 'Portefeuilles', bancos: 'Banques', configuracoes: 'Paramètres',
@@ -166,6 +277,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Supprime définitivement toutes vos données',
     excluirContaConfirmacao: 'Cette action est irréversible. Toutes vos données seront supprimées définitivement. Entrez votre mot de passe pour confirmer.',
     novaTransacao: 'Nouvelle Transaction', copiarTransacao: 'Copier la Transaction', transacaoSalva: 'Fait ! Transaction enregistrée.',
+    descricao: 'Description', valor: 'Montant', data: 'Date', tipo: 'Type', carteira: 'Portefeuille',
+    recorrencia: 'Récurrence', cancelar: 'Annuler', salvando: 'Enregistrement...', transacaoSalvaForm: '✓ Fait ! Transaction enregistrée.',
+    placeholder_descricao: 'Ex : Loyer, Salaire...', placeholder_valor: '0,00',
+    nenhumaTransacao: 'Aucune transaction trouvée.', transacaoRemovida: 'Fait ! Transaction supprimée.',
+    confirmarRemocao: 'Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible.',
+    saldoTotalLabel: 'Solde total', nenhumaCarteira: 'Aucun portefeuille enregistré.',
+    adicionarCarteiraLabel: 'Ajouter un portefeuille', nomeCarteira: 'Nom du portefeuille',
+    placeholder_carteira: 'Ex : BNP Paribas', salvandoCarteira: 'Enregistrement...', cancelarCarteira: 'Annuler',
+    confirmar: 'Confirmer',
+    conectarBancoTitulo: 'Connecter une banque', conectarContaBancaria: 'Connectez votre compte bancaire',
+    abrindoConexao: 'Ouverture de la connexion sécurisée...', importandoTransacoes: 'Importation des transactions',
+    buscandoTransacoes: 'Récupération de vos transactions...', transacoesImportadas: 'transactions importées avec succès.',
+    segurancaBancaria: '🔒 Vos données bancaires sont accessibles de manière sécurisée via Open Finance. Flowly ne stocke jamais vos identifiants bancaires.',
+    bemVindoFlowly: 'Bienvenue sur Flowly', criarContaFlowly: 'Créer un compte Flowly',
+    entrando: 'Connexion...', criandoConta: 'Création du compte...',
+    esqueceuSenha: 'Mot de passe oublié', recuperarSenha: 'Récupérer le mot de passe',
+    enviarLink: 'Envoyer le lien de récupération', enviando: 'Envoi...', voltarLogin: 'Retour à la connexion',
+    linkEnviado: 'Nous avons envoyé un lien à', verificarCaixa: 'Vérifiez votre boîte de réception.',
+    ocultarSenha: 'Masquer le mot de passe', mostrarSenha: 'Afficher le mot de passe',
+    placeholder_email: 'E-mail', placeholder_senha: 'Mot de passe', placeholder_senhaMin: 'Mot de passe (min. 8 caractères)',
+    placeholder_nomeCompleto: 'Nom complet',
+    erroNomeVazio: 'Entrez votre nom complet.', erroEmailInvalido: 'Entrez un e-mail valide, comme exemple@email.com.',
+    erroSenhaCurta: 'Le mot de passe doit comporter au moins 8 caractères.',
   },
   it: {
     transacoes: 'Transazioni', carteiras: 'Portafogli', bancos: 'Banche', configuracoes: 'Impostazioni',
@@ -188,6 +322,29 @@ const t: Record<Idioma, Translations> = {
     excluirContaDesc: 'Rimuove tutti i tuoi dati permanentemente',
     excluirContaConfirmacao: 'Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati definitivamente. Inserisci la tua password per confermare.',
     novaTransacao: 'Nuova Transazione', copiarTransacao: 'Copia Transazione', transacaoSalva: 'Fatto! Transazione salvata.',
+    descricao: 'Descrizione', valor: 'Importo', data: 'Data', tipo: 'Tipo', carteira: 'Portafoglio',
+    recorrencia: 'Ricorrenza', cancelar: 'Annulla', salvando: 'Salvataggio...', transacaoSalvaForm: '✓ Fatto! Transazione salvata.',
+    placeholder_descricao: 'Es: Affitto, Stipendio...', placeholder_valor: '0,00',
+    nenhumaTransacao: 'Nessuna transazione trovata.', transacaoRemovida: 'Fatto! Transazione eliminata.',
+    confirmarRemocao: 'Sei sicuro di voler eliminare questa transazione? Questa azione non può essere annullata.',
+    saldoTotalLabel: 'Saldo totale', nenhumaCarteira: 'Nessun portafoglio registrato.',
+    adicionarCarteiraLabel: 'Aggiungi portafoglio', nomeCarteira: 'Nome del portafoglio',
+    placeholder_carteira: 'Es: Banca Intesa', salvandoCarteira: 'Salvataggio...', cancelarCarteira: 'Annulla',
+    confirmar: 'Conferma',
+    conectarBancoTitulo: 'Collega banca', conectarContaBancaria: 'Collega il tuo conto bancario',
+    abrindoConexao: 'Apertura connessione sicura...', importandoTransacoes: 'Importazione transazioni',
+    buscandoTransacoes: 'Recupero delle tue transazioni...', transacoesImportadas: 'transazioni importate con successo.',
+    segurancaBancaria: '🔒 I tuoi dati bancari sono accessibili in modo sicuro tramite Open Finance. Flowly non memorizza mai le tue credenziali bancarie.',
+    bemVindoFlowly: 'Benvenuto su Flowly', criarContaFlowly: 'Crea un account Flowly',
+    entrando: 'Accesso...', criandoConta: 'Creazione account...',
+    esqueceuSenha: 'Password dimenticata', recuperarSenha: 'Recupera password',
+    enviarLink: 'Invia link di recupero', enviando: 'Invio...', voltarLogin: 'Torna al login',
+    linkEnviado: 'Abbiamo inviato un link a', verificarCaixa: 'Controlla la tua casella di posta.',
+    ocultarSenha: 'Nascondi password', mostrarSenha: 'Mostra password',
+    placeholder_email: 'Email', placeholder_senha: 'Password', placeholder_senhaMin: 'Password (min. 8 caratteri)',
+    placeholder_nomeCompleto: 'Nome completo',
+    erroNomeVazio: 'Inserisci il tuo nome completo.', erroEmailInvalido: 'Inserisci un\'email valida, come esempio@email.com.',
+    erroSenhaCurta: 'La password deve contenere almeno 8 caratteri.',
   },
 };
 
