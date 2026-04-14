@@ -115,7 +115,7 @@ export function TransactionItem({ transaction, carteiras, onCopiar, onDuplicar, 
 
         <button type="button" onClick={() => onApagar(id)}
           style={{ ...btnBase, color: '#e53935', borderColor: '#ef9a9a' }}
-          aria-label={`${tr('apagar')} ${tr('transacoes').toLowerCase()}`}>
+          aria-label={`${tr('apagar')} transação`}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />

@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AuthContext, type AuthContextValue } from './AuthContext';
+import { PreferencesProvider } from '../contexts/PreferencesContext';
 
 // Validates: Requirements 1.1
 
@@ -31,11 +32,13 @@ describe('ProtectedRoute — testes de propriedade', () => {
         fc.constant(null),
         (sessao) => {
           const { unmount } = render(
-            <AuthContext.Provider value={makeAuthValue({ sessao, carregando: false })}>
-              <ProtectedRoute>
-                <div data-testid="children-content">Conteúdo protegido</div>
-              </ProtectedRoute>
-            </AuthContext.Provider>
+            <PreferencesProvider>
+              <AuthContext.Provider value={makeAuthValue({ sessao, carregando: false })}>
+                <ProtectedRoute>
+                  <div data-testid="children-content">Conteúdo protegido</div>
+                </ProtectedRoute>
+              </AuthContext.Provider>
+            </PreferencesProvider>
           );
 
           const loginScreen = screen.queryByTestId('login-screen');

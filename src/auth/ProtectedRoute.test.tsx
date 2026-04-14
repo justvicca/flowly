@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AuthContext, type AuthContextValue } from './AuthContext';
+import { PreferencesProvider } from '../contexts/PreferencesContext';
 import type { Sessao } from './IAuthRepository';
 
 // Requisitos: 1.1, 5.5
@@ -31,11 +32,13 @@ const mockSessao: Sessao = {
 describe('ProtectedRoute', () => {
   it('renderiza SplashScreen quando carregando === true', () => {
     render(
-      <AuthContext.Provider value={mockAuthValue({ carregando: true })}>
-        <ProtectedRoute>
-          <div data-testid="protected-content">Conteúdo protegido</div>
-        </ProtectedRoute>
-      </AuthContext.Provider>
+      <PreferencesProvider>
+        <AuthContext.Provider value={mockAuthValue({ carregando: true })}>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Conteúdo protegido</div>
+          </ProtectedRoute>
+        </AuthContext.Provider>
+      </PreferencesProvider>
     );
 
     expect(screen.getByTestId('splash-screen')).toBeInTheDocument();
@@ -45,11 +48,13 @@ describe('ProtectedRoute', () => {
 
   it('renderiza LoginScreen quando sessao === null e carregando === false', () => {
     render(
-      <AuthContext.Provider value={mockAuthValue({ sessao: null, carregando: false })}>
-        <ProtectedRoute>
-          <div data-testid="protected-content">Conteúdo protegido</div>
-        </ProtectedRoute>
-      </AuthContext.Provider>
+      <PreferencesProvider>
+        <AuthContext.Provider value={mockAuthValue({ sessao: null, carregando: false })}>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Conteúdo protegido</div>
+          </ProtectedRoute>
+        </AuthContext.Provider>
+      </PreferencesProvider>
     );
 
     expect(screen.getByTestId('login-screen')).toBeInTheDocument();
@@ -59,11 +64,13 @@ describe('ProtectedRoute', () => {
 
   it('renderiza children quando há sessão ativa', () => {
     render(
-      <AuthContext.Provider value={mockAuthValue({ sessao: mockSessao, usuario: mockSessao.usuario, carregando: false })}>
-        <ProtectedRoute>
-          <div data-testid="protected-content">Conteúdo protegido</div>
-        </ProtectedRoute>
-      </AuthContext.Provider>
+      <PreferencesProvider>
+        <AuthContext.Provider value={mockAuthValue({ sessao: mockSessao, usuario: mockSessao.usuario, carregando: false })}>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Conteúdo protegido</div>
+          </ProtectedRoute>
+        </AuthContext.Provider>
+      </PreferencesProvider>
     );
 
     expect(screen.getByTestId('protected-content')).toBeInTheDocument();

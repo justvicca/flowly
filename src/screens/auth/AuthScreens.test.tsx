@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { AuthContext, type AuthContextValue } from '../../auth/AuthContext';
+import { PreferencesProvider } from '../../contexts/PreferencesContext';
 import { LoginScreen } from './LoginScreen';
 import { RegisterScreen } from './RegisterScreen';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
@@ -25,9 +26,11 @@ function mockAuthValue(overrides: Partial<AuthContextValue> = {}): AuthContextVa
 function renderWithAuth(ui: React.ReactElement, authOverrides: Partial<AuthContextValue> = {}) {
   const auth = mockAuthValue(authOverrides);
   render(
-    <AuthContext.Provider value={auth}>
-      {ui}
-    </AuthContext.Provider>
+    <PreferencesProvider>
+      <AuthContext.Provider value={auth}>
+        {ui}
+      </AuthContext.Provider>
+    </PreferencesProvider>
   );
   return { auth };
 }
