@@ -147,7 +147,7 @@ Replace the Pluggy integration with Belvo (Brazil) and GoCardless (Europe). This
   - Delete `api/pluggy/connect-token.ts`, `api/pluggy/accounts.ts`, `api/pluggy/transactions.ts`
   - _Requirements: 12.1, 12.2, 12.3_
 
-- [-] 7. Final checkpoint — Ensure all tests pass
+- [x] 7. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

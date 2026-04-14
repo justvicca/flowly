@@ -34,7 +34,6 @@ export function BankConnectionScreen() {
   const [importados, setImportados] = useState(0);
   const [instituicoes, setInstituicoes] = useState<GoCardlessInstitution[]>([]);
   const [busca, setBusca] = useState('');
-  const [requisitionId, setRequisitionId] = useState('');
 
   // GoCardless return: check ?ref= on mount
   useEffect(() => {
@@ -42,7 +41,6 @@ export function BankConnectionScreen() {
     const ref = params.get('ref');
     if (ref) {
       history.replaceState(null, '', window.location.pathname);
-      setRequisitionId(ref);
       setEtapa('aguardandoRetorno');
       importarGoCardless(ref);
     }
