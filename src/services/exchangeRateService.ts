@@ -32,7 +32,7 @@ async function fetchEurRates(currencies: string[]): Promise<Record<string, numbe
     return empty;
   }
 
-  const url = `https://api.frankfurter.app/latest?from=${FRANKFURTER_BASE}&to=${targets.join(',')}`;
+  const url = `https://api.frankfurter.dev/v1/latest?from=${FRANKFURTER_BASE}&to=${targets.join(',')}`;
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Frankfurter API error ${res.status}: ${await res.text()}`);

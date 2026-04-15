@@ -21,7 +21,8 @@ export function useExchangeRates(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const diffCurrencies = walletCurrencies.filter((c) => c !== displayCurrency);
+    const effectiveCurrencies = walletCurrencies.map((c) => c || 'BRL');
+    const diffCurrencies = effectiveCurrencies.filter((c) => c !== displayCurrency);
 
     if (diffCurrencies.length === 0) {
       setRates(null);
@@ -34,7 +35,7 @@ export function useExchangeRates(
     setLoading(true);
     setError(null);
 
-    fetchRates(displayCurrency, walletCurrencies)
+    fetchRates(displayCurrency, effectiveCurrencies)
       .then((r) => {
         if (!cancelled) {
           setRates(r);
@@ -50,7 +51,7 @@ export function useExchangeRates(
 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayCurrency]);
+  }, [displayCurrency, walletCurrencies.join(',')]);
 
   return { rates, loading, error };
 }

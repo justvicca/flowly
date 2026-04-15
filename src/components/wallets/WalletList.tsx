@@ -39,7 +39,7 @@ export function WalletList({ carteiras, onAdicionarCarteira }: WalletListProps) 
     return carteiras.reduce((sum, w) => {
       const walletMoeda = w.moeda ?? 'BRL';
       if (walletMoeda === displayCurrency) return sum + w.saldo;
-      if (!rates) return sum + w.saldo; // fallback: no conversion
+      if (!rates) return sum + w.saldo; // fallback: no conversion available
       const converted = convertAmount(w.saldo, walletMoeda, displayCurrency, rates);
       return sum + (isFinite(converted) ? converted : w.saldo);
     }, 0);
@@ -78,7 +78,9 @@ export function WalletList({ carteiras, onAdicionarCarteira }: WalletListProps) 
         {loadingRates ? (
           <span style={{ fontSize: '14px', color: 'var(--text2)' }}>...</span>
         ) : ratesError ? (
-          <span style={{ fontSize: '13px', color: '#c62828' }}>Erro ao converter</span>
+          <span style={{ fontWeight: 700, fontSize: '20px', color: convertedTotal !== null && convertedTotal >= 0 ? '#2e7d32' : '#c62828' }}>
+            {convertedTotal !== null ? formatarSaldo(convertedTotal, displayCurrency) : '—'}
+          </span>
         ) : (
           <span style={{ fontWeight: 700, fontSize: '20px', color: convertedTotal !== null && convertedTotal >= 0 ? '#2e7d32' : '#c62828' }}>
             {convertedTotal !== null ? formatarSaldo(convertedTotal, displayCurrency) : '—'}
