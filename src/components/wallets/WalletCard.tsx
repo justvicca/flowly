@@ -1,8 +1,10 @@
 import type { Wallet } from '../../types/flowly';
-import { usePreferences } from '../../contexts/PreferencesContext';
+import { convertAmount } from '../../services/exchangeRateService';
 
 interface WalletCardProps {
   wallet: Wallet;
+  rates?: Record<string, number> | null;
+  displayCurrency?: string;
 }
 
 function formatarSaldo(valor: number, codigoMoeda: string): string {
@@ -15,16 +17,27 @@ function corSaldo(valor: number): string {
   return '#757575';
 }
 
-export function WalletCard({ wallet }: WalletCardProps) {
+export function WalletCard({ wallet, rates, displayCurrency }: WalletCardProps) {
   const { nome, saldo } = wallet;
-  const { moeda } = usePreferences();
+  const walletMoeda = wallet.moeda ?? 'BRL';
+
+  const showSecondary =
+    displayCurrency &&
+    walletMoeda !== displayCurrency &&
+    rates != null;
+
+  const convertedValue = showSecondary
+    ? convertAmount(saldo, walletMoeda, displayCurrency!, rates!)
+    : null;
+
+  const showConverted = convertedValue !== null && isFinite(convertedValue);
 
   return (
     <article
       style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         padding: '14px 16px',
         border: '1px solid var(--border, #e0e0e0)',
         borderRadius: '6px',
@@ -34,12 +47,19 @@ export function WalletCard({ wallet }: WalletCardProps) {
       aria-label={`Carteira: ${nome}`}
     >
       <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text, #212121)' }}>{nome}</span>
-      <span
-        style={{ fontWeight: 700, fontSize: '17px', color: corSaldo(saldo) }}
-        aria-label={`Saldo: ${formatarSaldo(saldo, moeda.codigo)}`}
-      >
-        {formatarSaldo(saldo, moeda.codigo)}
-      </span>
+      <div style={{ textAlign: 'right' }}>
+        <span
+          style={{ fontWeight: 700, fontSize: '17px', color: corSaldo(saldo), display: 'block' }}
+          aria-label={`Saldo: ${formatarSaldo(saldo, walletMoeda)}`}
+        >
+          {formatarSaldo(saldo, walletMoeda)}
+        </span>
+        {showConverted && (
+          <span style={{ fontSize: '12px', color: 'var(--text2, #757575)', display: 'block', marginTop: '2px' }}>
+            ≈ {formatarSaldo(convertedValue!, displayCurrency!)}
+          </span>
+        )}
+      </div>
     </article>
   );
 }

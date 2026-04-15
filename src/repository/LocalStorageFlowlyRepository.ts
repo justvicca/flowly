@@ -86,18 +86,19 @@ export class LocalStorageFlowlyRepository implements IFlowlyRepository {
     return Promise.all(
       carteiras.map(async (c) => ({
         nome: c.nome,
+        moeda: c.moeda ?? 'BRL',
         saldo: await this.obterSaldoPorCarteira(userId, c.nome),
       }))
     );
   }
 
-  async adicionarCarteira(userId: string, nome: string): Promise<Wallet> {
+  async adicionarCarteira(userId: string, nome: string, moeda?: string): Promise<Wallet> {
     assertUserId(userId);
     const lista = loadCarteiras(userId);
     if (lista.some((c) => c.nome.toLowerCase() === nome.toLowerCase())) {
       throw new Error('Já existe uma carteira com esse nome.');
     }
-    const nova: Wallet = { nome, saldo: 0 };
+    const nova: Wallet = { nome, saldo: 0, moeda: moeda ?? 'BRL' };
     lista.push(nova);
     saveCarteiras(userId, lista);
     return nova;

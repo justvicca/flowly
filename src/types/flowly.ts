@@ -15,6 +15,7 @@ export type TransactionInput = Omit<Transaction, 'id' | 'timestamp'>;
 export interface Wallet {
   nome: string;
   saldo: number;
+  moeda?: string; // ISO 4217 code, defaults to 'BRL' when absent
 }
 
 export type ValidationResult =

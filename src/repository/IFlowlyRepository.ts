@@ -9,6 +9,6 @@ export interface IFlowlyRepository {
 
   // Carteiras
   listarCarteiras(userId: string): Promise<Wallet[]>;
-  adicionarCarteira(userId: string, nome: string): Promise<Wallet>;
+  adicionarCarteira(userId: string, nome: string, moeda?: string): Promise<Wallet>;
   obterSaldoPorCarteira(userId: string, nomeCarteira: string): Promise<number>;
 }

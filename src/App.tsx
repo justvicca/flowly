@@ -54,7 +54,7 @@ export function FlowlyAppContent() {
   const {
     transacoes, carteiras, carregando: sincronizando, erro,
     adicionarTransacao, copiarTransacao, duplicarTransacao,
-    moverTransacao, removerTransacao, adicionarCarteira, obterSaldoTotal,
+    moverTransacao, removerTransacao, adicionarCarteira,
   } = useFlowly();
 
   const [activeTab, setActiveTab] = useTabNav();
@@ -128,7 +128,7 @@ export function FlowlyAppContent() {
       )}
 
       {activeTab === 'carteiras' && (
-        <WalletList carteiras={carteiras} saldoTotal={obterSaldoTotal()} onAdicionarCarteira={adicionarCarteira} />
+        <WalletList carteiras={carteiras} onAdicionarCarteira={(nome, moeda) => adicionarCarteira(nome, moeda)} />
       )}
 
       {activeTab === 'configuracoes' && <SettingsScreen />}

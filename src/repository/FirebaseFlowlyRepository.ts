@@ -59,17 +59,18 @@ export class FirebaseFlowlyRepository implements IFlowlyRepository {
     assertUserId(userId);
     const ref = collection(db, 'users', userId, 'carteiras');
     const snap = await getDocs(ref);
-    const carteiras = snap.docs.map((d) => d.data().nome as string);
+    const carteiras = snap.docs.map((d) => ({ nome: d.data().nome as string, moeda: (d.data().moeda as string | undefined) ?? 'BRL' }));
 
     return Promise.all(
-      carteiras.map(async (nome) => ({
-        nome,
-        saldo: await this.obterSaldoPorCarteira(userId, nome),
+      carteiras.map(async (c) => ({
+        nome: c.nome,
+        moeda: c.moeda,
+        saldo: await this.obterSaldoPorCarteira(userId, c.nome),
       }))
     );
   }
 
-  async adicionarCarteira(userId: string, nome: string): Promise<Wallet> {
+  async adicionarCarteira(userId: string, nome: string, moeda?: string): Promise<Wallet> {
     assertUserId(userId);
     const ref = collection(db, 'users', userId, 'carteiras');
     const snap = await getDocs(ref);
@@ -77,8 +78,8 @@ export class FirebaseFlowlyRepository implements IFlowlyRepository {
       (d) => (d.data().nome as string).toLowerCase() === nome.toLowerCase()
     );
     if (existe) throw new Error('Já existe uma carteira com esse nome.');
-    await addDoc(ref, { nome });
-    return { nome, saldo: 0 };
+    await addDoc(ref, { nome, moeda: moeda ?? 'BRL' });
+    return { nome, saldo: 0, moeda: moeda ?? 'BRL' };
   }
 
   async obterSaldoPorCarteira(userId: string, nomeCarteira: string): Promise<number> {

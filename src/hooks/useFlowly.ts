@@ -211,9 +211,9 @@ export function useFlowly() {
   // -------------------------------------------------------------------------
 
   const adicionarCarteira = useCallback(
-    async (nome: string): Promise<void> => {
+    async (nome: string, moeda?: string): Promise<void> => {
       try {
-        await repo.adicionarCarteira(userId, nome);
+        await repo.adicionarCarteira(userId, nome, moeda);
         await recarregarCarteiras();
       } catch (err) {
         dispatch({ type: 'SET_ERROR', payload: (err as Error).message });
