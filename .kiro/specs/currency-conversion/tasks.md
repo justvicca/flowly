@@ -118,7 +118,7 @@ Extend the wallet system with per-wallet currency support and real-time conversi
   - Update `useFlowly` / `adicionarCarteira` call site to pass `moeda` through to the repository
   - _Requirements: 1.3, 5.1_
 
-- [-] 9. Final checkpoint — Ensure all tests pass
+- [x] 9. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
